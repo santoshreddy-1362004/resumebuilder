@@ -1,11 +1,16 @@
-import React from 'react'
+import React, { use, useContext } from 'react'
 import { landingPageStyles } from '../assets/dummystyle'
 import {LayoutTemplate} from 'lucide-react';
 import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import {UserContext} from  '../context/UserContext';
 
 const LandingPage = () => {
+  const {user}= useContext(UserContext);
+  const navigate= useNavigate()
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [openAuthModal, setOpenAuthModal] = useState(false);
 
   return (
     <div className={landingPageStyles.container}>
@@ -23,7 +28,7 @@ const LandingPage = () => {
                 </div>
                 {/* mobile menu button */}
                <button className={landingPageStyles.mobileMenuButton}
-                 onclick={()=>setMobileMenuOpen(!mobileMenuOpen)}>
+                 onClick={()=>setMobileMenuOpen(!mobileMenuOpen)}>
                     {mobileMenuOpen ? 
                     <X size={24} className={landingPageStyles.mobileMenuIcon} />:
                     <Menu size={24} className={landingPageStyles.mobileMenuIcon} />}
@@ -31,13 +36,27 @@ const LandingPage = () => {
                 </button>
                 {/* DESKTOP NAVIGATION */}
                 <div className='hidden md:flex items-center'>
-                  {user}
+                  {user ? (
+                    <div className="px-4 py-2 bg-violet-100 text-violet-700 rounded-lg">
+                      Welcome back!
+                    </div>
+                  ) : (
+                    <button className={landingPageStyles.desktopAuthButton} onClick={() => setOpenAuthModal(true)}>
+                      <div className={landingPageStyles.desktopAuthButtonOverlay}>
+                         </div>
+                      <span className={landingPageStyles.desktopAuthButtonText}>
+                        get started
+                      </span>
+                    </button>
+                  )}
                 </div>
 
             </div>
 
 
         </header>
+
+        
 
     </div>
   )

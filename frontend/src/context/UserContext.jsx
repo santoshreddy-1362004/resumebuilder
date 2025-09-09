@@ -3,7 +3,10 @@ import React,{createContext,useState,useEffect} from "react";
 export const UserContext = createContext();
 const UserProvider=({children})=>{
     const [user,setUser]= useState(null);
-    const [loading,setLoading]=useState(true);
+    const [loading,setLoading]=useState(false); // Set to false until we have proper API setup
+    
+    // Temporarily commented out until we set up axios and API paths
+    /*
     useEffect(()=>{
         if(user) return;
     const accessToken=localStorage.getItem('token');
@@ -23,17 +26,22 @@ const UserProvider=({children})=>{
         }
     };
     fetchUser();
-}, []);
+    }, [user]);
+    */
+    
+    
     const updateUser=(userData)=>{
         setUser(userData);
         localStorage.setItem('token',userData.token);
         setLoading(false);
-    };
-    const clearUser=()=>{
+    }
+    
+    const clearUser = () => {
         setUser(null);
         localStorage.removeItem('token');
         setLoading(false);
-    }
+    };
+    
     return(
         <UserContext.Provider value={{ user, loading, updateUser, clearUser }}>
             {children}
@@ -41,3 +49,4 @@ const UserProvider=({children})=>{
     )
 }
 export default UserProvider;
+export { UserProvider };
