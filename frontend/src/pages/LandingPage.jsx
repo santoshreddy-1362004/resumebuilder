@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react'
 import { landingPageStyles } from '../assets/dummystyle'
-import { ArrowRight, LayoutTemplate, Menu, X } from 'lucide-react';
+import { ArrowRight, LayoutTemplate, Menu, X, Zap, Download } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import {UserContext} from  '../context/UserContext';
 import { ProfileInfoCard } from '../components/Cards';
@@ -105,7 +105,7 @@ const LandingPage = () => {
                         craft
                         </span>
                         <span className={landingPageStyles.headingGradient}>
-                          Proffesional
+                          Professional
                         </span>
                          <span className={landingPageStyles.headingText}>
                           Resumes
@@ -227,7 +227,117 @@ const LandingPage = () => {
                   </div>
                   </section>
 
+                  {/** features section **/}
+                 <section className={landingPageStyles.featuresSection}>
+                  <div className={landingPageStyles.featuresContainer}>
+                    <div className={landingPageStyles.featuresHeader}>
+                      <h2 className={landingPageStyles.featuresTitle}>
+                        Why Choose <span className={landingPageStyles.featuresTitleGradient}>ResumeXpert?</span>
+                      </h2> 
+                      <p className={landingPageStyles.featuresDescription}>
+                        Discover the benefits of using ResumeXpert to create your professional resume quickly and easily.
+                      </p>
+                      <div className={landingPageStyles.featuresGrid}>
+                       {[
+                                {
+                                    icon: <Zap className={landingPageStyles.featureIcon} />,
+                                    title: "Lightning Fast",
+                                    description: "Create professional resumes in under 5 minutes with our streamlined process",
+                                    gradient: landingPageStyles.featureIconViolet,
+                                    bg: landingPageStyles.featureCardViolet
+                                },
+                                {
+                                    icon: <LayoutTemplate className={landingPageStyles.featureIcon} />,
+                                    title: "Pro Templates",
+                                    description: "Choose from dozens of recruiter-approved, industry-specific templates",
+                                    gradient: landingPageStyles.featureIconFuchsia,
+                                    bg: landingPageStyles.featureCardFuchsia
+                                },
+                                {
+                                    icon: <Download className={landingPageStyles.featureIcon} />,
+                                    title: "Instant Export",
+                                    description: "Download high-quality PDFs instantly with perfect formatting",
+                                    gradient: landingPageStyles.featureIconOrange,
+                                    bg: landingPageStyles.featureCardOrange
+                                }
+                            ].map((feature,index)=>(
+                              <div key={index} className={landingPageStyles.featureCard}>
+                                <div className={landingPageStyles.featureCardHover}></div>
+                                <div className={`${landingPageStyles.featureCardContent} ${feature.bg}`}>
+                                  <div className={`${landingPageStyles.featureIconContainer} ${feature.gradient}`}>
+                                    {feature.icon}
+                                  </div>
+                                  <h3 className={landingPageStyles.featureTitle}>{feature.title}</h3>
+                                  <p className={landingPageStyles.featureDescription}>{feature.description}</p>
+                                </div> 
+                              </div>
+                            ))
+                          }
+                      </div>
+                      
+
+                    </div>
+
+                  </div>
+
+                 </section>
+                 {/* CTA section*/}
+                 <section className={landingPageStyles.ctaSection}>
+                  <div className={landingPageStyles.ctaContainer}>
+
+                    <div className={landingPageStyles.ctaCard}>
+                      <div className={landingPageStyles.ctaCardBg}></div>
+                      <div className={landingPageStyles.ctaCardContent}>
+                        <h2 className={landingPageStyles.ctaTitle}>
+                          Ready to Build your<span className={landingPageStyles.ctaTitleGradient}> 
+                          Professional Resume?
+                          </span>
+                          </h2>
+                      <p className={landingPageStyles.ctaDescription}>
+                        join thousands of professionals who landed their dream jobs with our platform.
+                      </p>
+                      <button className={landingPageStyles.ctaButton} onClick={handleCTA}>
+                        <div className={landingPageStyles.ctaButtonOverlay}></div>
+                        <span className={landingPageStyles.ctaButtonContent}>
+                          Start Building Now
+                         
+                        </span>
+                      </button>
+
+
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                 </section>
+
              </main>
+
+        <footer className={landingPageStyles.footer}>
+          <div className={landingPageStyles.footerContainer}>
+            <p className={landingPageStyles.footerText}>
+              created with <span className={landingPageStyles.footerHeart}>❤️</span> by{''}
+              <a href=" https://github.com/santoshreddy-1362004" target='_blank' className={landingPageStyles.footerLink}> Santosh Reddy</a>
+
+            </p>
+
+          </div>
+
+
+        </footer>
+        {/* modal for login and signup*/}
+        <modal isOpen={openAuthModal} onClose={()=>
+        {setOpenAuthModal(false)
+         setCurrentPage(login)
+        }} hideHeader>
+          <div>
+            {currentPage==="login" &&<Login setCurrentPage={setCurrentPage}/>}
+            {currentPage==="signup" &&<Signup setCurrentPage={setCurrentPage}/>}
+          </div>
+
+        </modal>
         
 
     </div>
