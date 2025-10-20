@@ -5,7 +5,7 @@ import { cardStyles } from '../assets/dummystyle';
 
 //profile info cards
 
-export const ProfileInCard=()=>{
+export const ProfileInfoCard=()=>{
     const navigate =useNavigate();
     const {user,clearUser}= useContext(UserContext);
     const handleLogout=()=>{
