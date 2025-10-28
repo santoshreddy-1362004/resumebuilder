@@ -2,8 +2,11 @@ import React, { useState, useContext } from 'react'
 import { landingPageStyles } from '../assets/dummystyle'
 import { ArrowRight, LayoutTemplate, Menu, X, Zap, Download } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import {UserContext} from  '../context/UserContext';
+import { UserContext } from  '../context/UserContext';
 import { ProfileInfoCard } from '../components/Cards';
+import Modal from '../components/Modal';
+import Login from '../components/Login';
+import SignUp from '../components/SignUp';
 
 const LandingPage = () => {
   const {user}= useContext(UserContext);
@@ -328,16 +331,16 @@ const LandingPage = () => {
 
         </footer>
         {/* modal for login and signup*/}
-        <modal isOpen={openAuthModal} onClose={()=>
+        <Modal isOpen={openAuthModal} onClose={()=>
         {setOpenAuthModal(false)
-         setCurrentPage(login)
+         setCurrentPage("login")
         }} hideHeader>
           <div>
             {currentPage==="login" &&<Login setCurrentPage={setCurrentPage}/>}
-            {currentPage==="signup" &&<Signup setCurrentPage={setCurrentPage}/>}
+            {currentPage==="signup" &&<SignUp setCurrentPage={setCurrentPage}/>}
           </div>
 
-        </modal>
+        </Modal>
         
 
     </div>
