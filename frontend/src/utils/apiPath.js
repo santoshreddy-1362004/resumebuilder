@@ -1,4 +1,4 @@
-export const BASE_URL = "http://localhost:5000";
+export const BASE_URL = "https://cuddly-rotary-phone-7vrx9qjvj66w2vx4-4000.app.github.dev";
 
 // Routes used for frontend
 
