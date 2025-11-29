@@ -1,6 +1,14 @@
-import react, { useEffect } from 'react'
+import react, { useEffect,useState} from 'react'
 import DashboardLayout from '../components/DashboardLayout'
 import { dashboardStyles as styles } from '../assets/dummystyle'
+import {LucideFilePlus} from 'lucide-react';
+import {useNavigate} from 'react-router-dom';
+import axiosInstance from '../utils/axiosInstance';
+import {API_PATHS} from '../utils/apiPaths';
+import { ResumeSummaryCard } from '../components/Cards';
+import toast from 'react-hot-toast';
+import moment from 'moment';
+
 
 
 const Dashboard = () => {
@@ -108,6 +116,27 @@ const Dashboard = () => {
   useEffect((()=>{
     fetchAllResumes();
   }), [])
+  const handleDeleteResume=async()=>{
+    if(!resumeToDelete) return;
+    try{ 
+      await axiosInstance.delete(API_PATHS.RESUME.DELETE(resumeToDelete));
+      toast.success('Resume deleted successfully');
+      fetchAllResumes();
+
+    } catch(error){
+      console.error('Error deleting resume:',error);
+      toast.error('Failed to delete resume. Please try again.');
+
+    } finally{
+      setShowDeleteConfirm(false);
+      setResumeToDelete(null);
+    }
+  }
+
+  const handleDeleteClick=(id)=>{
+    setResumeToDelete(id);
+    setShowDeleteConfirm(true);
+  }
   return (
    <DashboardLayout>
     <div className={styles.container}>
@@ -181,20 +210,54 @@ const Dashboard = () => {
             <h3 className={styles.newResumeTitle}>Create New Resume</h3>
             <p className={styles.newResumeText}>start building your career </p>
           </div>
+          {allResumes.map((resume)=>(
+            <ResumeSummaryCard
+              key={resume._id}
+              imgurl={resume.thumbnailLink}
+              title={resume.title} createdAt={resume.createdAt} updatedAt={resume.updatedAt}
+              onSelect={()=> navigate(`/resume/${resume._id}`)}
+              onDelete={()=>handleDeleteClick(resume._id)}
+              completion={resume.completion || 0}
+              isPremium={resume.isPremium}
+              isNew={moment().diff(moment(resume.createdAt),'days')<7}
+            />
+
+          ))}
           
 
           </div>
 
       )}
         
+ </div>
+ {/* create modal*/}
+<Modal isOpen={openCreateModal} onclose={()=> setOpenCreateModal(false)}
+hideHeader maxWidth="max-w-2xl">
+  <div className='p-6 '>
+    <div className={styles.modalHeader}>
+      <h3 className={styles.modalTitle}>Create New Resume</h3>
 
-
-        
-
-
-      
+      <button onClick={()=>setOpenCreateModal(false)} className={styles.modalCloseButton} >
+             X
+        </button>
 
     </div>
+    <createResumeForm onSucess={()=>{
+      setOpenCreateModal(false);
+      fetchAllResumes();
+
+    }} />
+
+  </div>
+  </Modal>
+
+  {/* delete confirmation modal */}
+  <Modal isOpen={showDeleteConfirm} onclose={()=>{
+    setShowDeleteConfirm(false);
+    setResumeToDelete(null);
+  }
+
+
    </DashboardLayout>
   )
 }
