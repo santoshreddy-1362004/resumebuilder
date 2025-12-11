@@ -252,13 +252,29 @@ hideHeader maxWidth="max-w-2xl">
   </Modal>
 
   {/* delete confirmation modal */}
-  <Modal isOpen={showDeleteConfirm} onclose={()=>{
-    setShowDeleteConfirm(false);
-    setResumeToDelete(null);
-  }
+
+  <Modal isOpen={showDeleteConfirm} onclose={()=> setShowDeleteConfirm(false)} title="confirmm Deletion"
+  showActionBtn actionBtnText='delete' actionBtnClassName='bg-red-600 hover:bg-red-700 '
+  onActionClick={handleDeleteResume}>
+    <div className='p-4'>
+      <div className='flex flex-col item-center text-center'>
+        <div className={styles.deleteIconWrapper}>
+          <LucideTrash2 className='text-orange-600' size={24}/>
+         </div>
+        <h3 className={styles.deleteModalTitle}>Are you sure you want to delete this resume?</h3>
+        <p className={styles.deleteModalText}>This action cannot be undone.</p>
 
 
+      </div>
+
+    </div>
+
+    
+  
+
+    </Modal>
    </DashboardLayout>
+   
   )
 }
 
