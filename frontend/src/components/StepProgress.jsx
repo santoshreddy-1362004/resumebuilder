@@ -1,5 +1,6 @@
 import react from 'react';
 import{shimmerStyle} from '../assets/dummystyle';
+import {Check} from 'react-feather';
 
 const StepProgress =({progress}) =>{
 
@@ -55,6 +56,30 @@ const StepProgress =({progress}) =>{
                         </div>
                     )}
   
+
+        </div>
+
+        <div className='flex justify-between items-center mt-3'>
+            <div className='text-xs font-bold text-white/60'>
+            {progress<25
+            ?"Getting Started"
+            :progress<50
+            ?"Making Progress"
+            :progress<75
+            ?"Almost There"
+            :" nearly completed Completed!"
+            }
+
+            </div>
+
+            <div className='flex items-center gap-2'>
+                {progress===100 &&(
+                    <div className='w-6 h-6 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center'>
+                        <Check size={12} className='text-white'/>
+                        </div>
+                )}
+
+            </div>
 
         </div>
             

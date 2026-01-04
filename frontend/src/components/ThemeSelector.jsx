@@ -1,4 +1,4 @@
-import react,{use, useRef,useState} from "react";
+import react,{ useEffect, useRef,useState} from "react";
 import{DUMMY_RESUME_DATA, resumeTemplates} from '../utils/data';
 
 import{resumeTemplates} from '../utils/data';
@@ -8,12 +8,13 @@ const ThemeSelector=({selectedTheme,setSelectedTheme,resumeData,onClose})=>{
     const[baseWidth,setBaseWidth]=useState(800);
 
     //selected theme using id
-    const intailIndex =resumeTemplates.findIndex(t=>t.id===selectedTheme.id);
-    const[selectedTheme,setSelectedTheme] = useState({
+    const initialIndex =resumeTemplates.findIndex(t=>t.id===selectedTheme.id);
+    const[selectedTemplate,setSelectedTemplate] = useState({
         theme: selectedTheme||resumeTemplates[0]?.id||"",
-        index: initialIndex>=0 ? intialIndex:0
+        index: initialIndex>=0 ? initialIndex:0
     })
     const[tabValue,setTabValue]=useState('Templates')
+    
     const handleThemeSelection=()=>{
         setSelectedTheme(selectedTemplate.theme)
         onClose();
@@ -23,13 +24,21 @@ const ThemeSelector=({selectedTheme,setSelectedTheme,resumeData,onClose})=>{
             setBaseWidth(resumeRef.current.offsetWidth);
         }
     }
+
+    useEffect(()=>{
+        updateBaseWidth();
+        window.addEventListener('resize',updateBaseWidth);
+        return()=>{
+            window.removeEventListener('resize',updateBaseWidth);
+        }
+    },[])
      return(
         <div className="max-w-7xl mx-auto px-4">
             {/*header*/}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 p-4 sm:p-6 bg-gradient-to-r from-white to-violet-50 rounded-2xl border border-violet-100">
                 <Tabs tabs={TAB_DATA} activeTab={tabValue} setActiveTab={setTabValue}/>
                 <button className='w-full sm:w-auto flex items-center justify-center justify-center gap-3 px-6 py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-black rounded-2xl hover:scale-105 transistion-all shadow-lg hover:shadow-xl' onClick={handleThemeSelection}>
-                <check size={18}/> apply changes
+                <check size={18}/> Apply changes
                 </button>
 
 

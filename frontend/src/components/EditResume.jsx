@@ -1,6 +1,6 @@
 import react, { useState } from 'react';
 import Dashboard from '../pages/Dashboard';
-import { buttonStyles, containerStyles } from '../assets/dummystyle';
+import { buttonStyles, containerStyles, iconStyles, statusStyles } from '../assets/dummystyle';
 import { TitleInput } from './Inputs';
 import DashboardLayout from './DashboardLayout';
 import { Download, Trash } from 'lucide-react';
@@ -8,6 +8,7 @@ import { Download, Trash } from 'lucide-react';
 
 
 import html2pdf from "html2pdf.js"
+import ThemeSelector from './ThemeSelector';
 
 //resize observer
 const useResizeObserver = () => {
@@ -698,10 +699,141 @@ return (
 
 
             </div>
+            {/*step progress*/}
+            <div className={containerStyles.grid}>
+              <div className={containerStyles.formContainer}>
+                <StepProgress progress={progress}/>
+                {renderForm()}
+                <div className="p-4 sm:p-6">
+                  {errorMsg &&(
+                    <div className={statusStyles.error}>
+
+                      <AlertCircle size={16}/>
+                      {errorMsg}
+
+                    </div>
+                  )}
+                  <div className="flex flex-wrap items-center justify-end gap-3">
+                    <button className={buttonStyles.back} onClick={goBack} disabled={isLoading}>
+                      <ArrowLeft size={16}/>
+                      Back
+
+                    </button>
+
+          <button className={buttonStyles.save} onClick={uploadResumeImages} disabled={isLoading}>
+            {isLoading ? <Loader2 size={16} className="animate-spin"/> : <Save size={16}/>}
+            {isLoading ? "Saving..." : "Save & exit "}
+
+          </button>
+          <button className={buttonStyles.next} onClick={validateAndNext} disabled={isLoading}>
+            {currentPage === "additionalInfo" && <Download size={16} />}
+            {currentPage === "additionalInfo" ? "Preview & Download": "Next" }
+            {currentPage === "additionalInfo" && <ArrowLeft size={16} className="rotate-180"/>}
+
+          </button>
+
+                  </div>
+
+                </div>
+
+
+              </div>
+              <div className="hidden lg:block">
+                <div className={containerStyles.previewContainer}>
+                  <div className="text-center mb-4">
+                    <div className={statusStyles.completionBadge}>
+                      <div className={iconStyles.pulseDot}></div>
+                      <span>preview - {completionPercentage}% Complete</span>
+
+                    </div>
+
+                  </div>
+                  <div className='preview-container relative' ref={previewContainerRef}>
+                    <div className={containerStyles.previewInner}>
+                      <RenderResume key={`preview-${resumeData.template.theme}`}
+                      templateId={resumeData?.template?.theme || ""}
+                      resumeData={resumeData}
+                      containerWidth={previewWidth}
+                      />
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
 
 
 
         </div>
+        {/*modal data here*/ }
+        <Modal isOpen={openThemeSelector} onClose={()=>setOpenThemeSelector(false)}
+        title="change Title">
+          <div className={containerStyles.modalContent}>
+            <ThemeSelector selectedTheme={resumeData?.template.theme}
+            setSelectedTheme={updateTheme} onClose={()=>setOpenThemeSelector(false)}
+            />
+          </div>
+          </Modal>
+
+          <Modal isOpen={openPreviewModal} onClose={()=>setOpenPreviewModal(false)}
+          title={resumeData.title}
+          showActionBtn
+          actionBtnText={isDownloading ? "generating..."
+            : downloadSuccess ? "Downloaded" : "Download PDF"}
+            actionBtnIcon={
+              isDownloading ?(
+                <Loader2 size={16} className="animate-spin"/>
+              ) : downloadSuccess ? (
+                <Check size={16} className="text-white"/>
+              ) : (
+                <Download size={16}/>
+              )
+            }
+          
+          onActionClick={downloadPDF}
+          >
+          <div className="relative">
+            <div className="text-center mb-4">
+              <div className={statusStyles.modalBadge}>
+                <div className={iconStyles.pulseDot}></div>
+                <span>completion: {completionPercentage}%</span>
+
+              </div>
+              </div> 
+              <div className={containerStyles.pdfPreview}>
+                <div ref={resumeDownloadRef} className="a4-wrapper">
+                  <div className="w-full h-full ">
+                    <RenderResume key={`pdf-${resumeData?.template?.theme}`}
+                    templateId={resumeData?.template?.theme || ""}
+                    resumeData={resumeData}
+                    containerWidth={null}
+                    />
+
+                  </div>
+
+                </div>
+
+              </div>
+
+          </div>
+
+          </Modal>
+          {/* thumbnail issue fixed */}
+          <div style={{display:"none"}} ref={thumbnailRef}>
+            <div className={containerStyles.hiddenThumbnail}>
+              <RenderResume key={`thumb-${resumeData?.template?.theme}`}
+              templateId={resumeData?.template?.theme || ""}
+              resumeData={resumeData}
+              
+              />
+
+            </div>
+
+          </div>
     </DashboardLayout>
   
   )
