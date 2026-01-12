@@ -6,16 +6,24 @@ import upload from '../middleware/uploadMiddleware.js';
 
 export const uploadResumeImages = async (req, res) => { 
     try{
+        console.log('Upload request received for resume:', req.params.id);
+        console.log('User:', req.user?.id);
+        
         //configure multer to handle images
         upload.fields([{name:'thumbnail'},{name:"profileImage"}])
         (req,res, async (err) => {
             if(err){
+                console.error('Multer error:', err);
                 return res.status(400).json({ message:"file upload failed", error:err.message });
             }
+            
+            console.log('Files received:', req.files);
+            
             const resumeId= req.params.id;
             const resume= await Resume.findOne({_id:resumeId,userId:req.user.id});
 
             if(!resume){
+                console.error('Resume not found:', resumeId);
                 return res.status(404).json({ message: "Resume not found" });
             }
             //use process cwd to locate uploads folder
@@ -36,20 +44,20 @@ export const uploadResumeImages = async (req, res) => {
             }
             //same for profilepreview image
             if(newProfileImage){
-                if(resume.profileInfo?.profilepreviewUrl){
-                    const oldProfile = path.join(uploadsFolder, path.basename(resume.profileInfo.profilepreviewUrl));
+                if(resume.profileInfo?.profilePreviewUrl){
+                    const oldProfile = path.join(uploadsFolder, path.basename(resume.profileInfo.profilePreviewUrl));
                     if(fs.existsSync(oldProfile)){
                         fs.unlinkSync(oldProfile);
                     }
                 }
-                resume.profileInfo.profilepreviewUrl = `${baseUrl}/uploads/${newProfileImage.filename}`;
+                resume.profileInfo.profilePreviewUrl = `${baseUrl}/uploads/${newProfileImage.filename}`;
             }
 
             await resume.save();
             res.status(200).json({ 
                 message: "Images uploaded successfully", 
-                thumbnail: resume.thumbnailLink,
-                profilePreview: resume.profileInfo.profilepreviewUrl
+                thumbnailLink: resume.thumbnailLink,
+                profilePreview: resume.profileInfo.profilePreviewUrl
             });
         });
     }

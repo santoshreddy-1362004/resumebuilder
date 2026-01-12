@@ -22,7 +22,8 @@ const TemplateThree = ({ resumeData = {}, containerWidth }) => {
       const actualBaseWidth = resumeRef.current.offsetWidth;
       setBaseWidth(actualBaseWidth);
       if (containerWidth > 0) {
-        setScale(containerWidth / actualBaseWidth);
+        const newScale = containerWidth / actualBaseWidth;
+        setScale(newScale);
       }
     }
   }, [containerWidth]);

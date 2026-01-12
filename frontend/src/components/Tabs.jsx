@@ -1,4 +1,4 @@
-import react from "react";
+import React from "react";
 
 const Tabs =({tabs,activeTab,setActiveTab})=>{
     return(
@@ -11,7 +11,7 @@ const Tabs =({tabs,activeTab,setActiveTab})=>{
                         font-bold rounded-xl transition-all
                         ${activeTab=== tab.label ? "bg-white text-violet-700 shadow-lg "
                            :"text-slate-500 hover:text-violet-600 hover:bg-white/50"} `}
-                           onClick={()=>setActiveTab(tab.level)}>
+                           onClick={()=>setActiveTab(tab.label)}>
                            <span className='relative z-10'>
                             {tab.label}
                             {activeTab=== tab.label &&(
@@ -31,3 +31,5 @@ const Tabs =({tabs,activeTab,setActiveTab})=>{
         </div>
     )
 }
+
+export default Tabs;

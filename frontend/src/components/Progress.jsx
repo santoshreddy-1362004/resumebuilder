@@ -1,4 +1,4 @@
-import react from 'react';
+import React from 'react';
 
 const Progress=({progress=0,total=5, color, bgColor}) => {
     return (

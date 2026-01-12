@@ -16,7 +16,7 @@ const ResumeSchema= new mongoose.Schema({
     },
     template:{
         theme:String,
-        colorPalette:String,
+        colorPalette:[String],
     },
     profileInfo:{
         profilePreview:String,
@@ -25,7 +25,7 @@ const ResumeSchema= new mongoose.Schema({
         summary:String,
 
     },
-    contactinfo:{
+    contactInfo:{
         email:String,
         phone:String,
         location:String,
@@ -36,8 +36,8 @@ const ResumeSchema= new mongoose.Schema({
     },
     //workexperience
     workExperience:[{
-        companyName:String,
-        jobTitle:String,
+        company:String,
+        role:String,
         startDate:String,
         endDate:String,
         description:String,
@@ -54,7 +54,7 @@ const ResumeSchema= new mongoose.Schema({
         progress:String,
     }],
     projects:[{
-        projectName:String,
+        title:String,
         description:String,
         github:String,
         liveDemo:String,
@@ -69,7 +69,7 @@ const ResumeSchema= new mongoose.Schema({
         name:String,
         progress:String,
     }],
-    intrests:[String],
+    interests:[String],
 
 
 },

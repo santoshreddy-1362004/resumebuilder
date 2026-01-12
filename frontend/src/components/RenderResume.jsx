@@ -1,6 +1,7 @@
-import react from 'react';
-import templateOne from './TemplateOne';
-import templateTwo from './TemplateTwo';
+import React from 'react';
+import TemplateOne from './TemplateOne';
+import TemplateTwo from './TemplateTwo';
+import TemplateThree from './TemplateThree';
 
 const RenderResume=({
     templateId,
@@ -18,9 +19,14 @@ const RenderResume=({
                     <TemplateTwo resumeData={resumeData} containerWidth={containerWidth}/>
                 )
             case "03":
-                <TemplateThree resumeData={resumeData} containerWidth={containerWidth}/>
-                
-}
+                return(
+                    <TemplateThree resumeData={resumeData} containerWidth={containerWidth}/>
+                )
+            default:
+                return (
+                    <TemplateOne resumeData={resumeData} containerWidth={containerWidth}/>
+                )
+        }
 }
 
 export default RenderResume;

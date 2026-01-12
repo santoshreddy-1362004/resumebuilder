@@ -2,6 +2,7 @@ import React, {useContext,useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import {UserContext} from  '../context/UserContext';
 import { cardStyles } from '../assets/dummystyle';
+import { Check, Edit, Award, TrendingUp, Zap, Clock, Trash2 } from 'lucide-react';
 
 //profile info cards
 
@@ -204,16 +205,16 @@ export const TemplateCard=({thumbnailImg,isSelected,onSelect})=>{
   return(
     <div className={`group h-auto md:h-[300px] lg:h-[320px] flex flex-col bg-white border-2 overflow-hidden cursor-pointer transition-all duration-500 hover:scale-105 hover:shadow-lg rounded-3xl
     ${
-      isSelected? 'border-violet-500 shadow-lg shadow-violet-500/20 bg-voilet-50':'border-gray-200 hover:border-violet-300'
+      isSelected? 'border-violet-500 shadow-lg shadow-violet-500/20 bg-violet-50':'border-gray-200 hover:border-violet-300'
     }`} onClick={onSelect}>
       {
         thumbnailImg ? (
-          <div>
-            <img src={thumbnailImg || 'placeholder.svg'} alt="Template Review" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"/>
-            <div className="absolute inset-0 bg-gradient-to-t from-white/00 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"/>
+          <div className="relative w-full h-full">
+            <img src={thumbnailImg || 'placeholder.svg'} alt="Template Review" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 pointer-events-none"/>
+            <div className="absolute inset-0 bg-gradient-to-t from-white/00 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"/>
          
          {isSelected &&(
-          <div className='absolute inset-0 bg-violet-500/10 flex items-center justify-center'>
+          <div className='absolute inset-0 bg-violet-500/10 flex items-center justify-center pointer-events-none'>
             <div className='w-16 h-16 bg-white backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg animate-pulse'>
               <Check size={24} className="text-violet-600" />
               
@@ -223,7 +224,7 @@ export const TemplateCard=({thumbnailImg,isSelected,onSelect})=>{
 
          )}
          {/*hover effect*/}
-         <div className="absolute inset-0 bg-gradient-to-t from-violet-100/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+         <div className="absolute inset-0 bg-gradient-to-t from-violet-100/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
 
 
 

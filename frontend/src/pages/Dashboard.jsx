@@ -1,19 +1,21 @@
-import react, { useEffect,useState} from 'react'
+import React, { useEffect,useState} from 'react'
 import DashboardLayout from '../components/DashboardLayout'
 import { dashboardStyles as styles } from '../assets/dummystyle'
-import {LucideFilePlus} from 'lucide-react';
+import {FilePlus, Trash2} from 'lucide-react';
 import {useNavigate} from 'react-router-dom';
 import axiosInstance from '../utils/axiosInstance';
-import {API_PATHS} from '../utils/apiPaths';
+import {API_PATHS} from '../utils/apiPath';
 import { ResumeSummaryCard } from '../components/Cards';
 import toast from 'react-hot-toast';
 import moment from 'moment';
+import Modal from '../components/Modal';
+import CreateResumeForm from '../components/CreateResumeForm';
 
 
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const[openCreateModal,setOpenCreateModal]=react.useState(false);
+  const[openCreateModal,setOpenCreateModal]=useState(false);
   const [allResumes,setAllResumes]=useState([]);
   const [loading,setLoading]=useState(true);
   const[resumeToDelete,setResumeToDelete]=useState(null);
@@ -96,8 +98,10 @@ const Dashboard = () => {
     try{
       setLoading(true);
       const response = await axiosInstance.get(API_PATHS.RESUME.GET_ALL);
+      console.log('Fetched resumes:', response.data);
       //add completion percentage to each resume
-      const resumesWithCompletion=response.data.resumes.map(resume=>({
+      const resumes = Array.isArray(response.data) ? response.data : [];
+      const resumesWithCompletion=resumes.map(resume=>({
         ...resume,
         completion:calculateCompletion(resume)
       }));
@@ -106,7 +110,8 @@ const Dashboard = () => {
     }
     catch(error){
       console.error('Error fetching resumes:',error);
-
+      console.error('Error response:', error.response?.data);
+      setAllResumes([]);
     }
     finally{
       setLoading(false);
@@ -149,12 +154,11 @@ const Dashboard = () => {
         </div>
 
         <div className='flex gap-4'>
-          <button className={styles.createButton}>
-            onClick={()=>setOpenCreateModal(true)}
+          <button className={styles.createButton} onClick={()=>setOpenCreateModal(true)}>
             <div className={styles.createButtonOverlay}> </div>
             <span className={styles.createButtonContent}>
               Create Resume
-              <LucideFilePlus className='group-hover:translate-x-1 transition-transform'size={18}/>
+              <FilePlus className='group-hover:translate-x-1 transition-transform'size={18}/>
               </span>
          </button>
 
@@ -175,7 +179,7 @@ const Dashboard = () => {
       {!loading && allResumes.length===0 &&(
         <div className={styles.emptyStateWrapper}>
           <div className={styles.emptyIconWrapper}>
-          <LucideFilePlus size={32} className='text-violet-600'/>
+          <FilePlus size={32} className='text-violet-600'/>
            </div>
            <h3 className={styles.emptyTitle}>No resumes found</h3>
            <p className={styles.emptyText}>
@@ -189,7 +193,7 @@ const Dashboard = () => {
               </div>
               <span className={styles.createButtonContent}>
                 Create your first Resume
-                 <LucideFilePlus className='group-hover:translate-x-1 transition-transform' size={20}/>
+                 <FilePlus className='group-hover:translate-x-1 transition-transform' size={20}/>
 
 
               </span>
@@ -204,7 +208,7 @@ const Dashboard = () => {
         <div className={styles.grid}>
           <div className={styles.newResumeCard} onClick={()=>setOpenCreateModal(true)}> 
             <div className={styles.newResumeIcon}>
-              <LucideFilePlus size={32} className='text-white'/>
+              <FilePlus size={32} className='text-white'/>
 
             </div>
             <h3 className={styles.newResumeTitle}>Create New Resume</h3>
@@ -231,7 +235,7 @@ const Dashboard = () => {
         
  </div>
  {/* create modal*/}
-<Modal isOpen={openCreateModal} onclose={()=> setOpenCreateModal(false)}
+<Modal isOpen={openCreateModal} onClose={()=> setOpenCreateModal(false)}
 hideHeader maxWidth="max-w-2xl">
   <div className='p-6 '>
     <div className={styles.modalHeader}>
@@ -242,7 +246,7 @@ hideHeader maxWidth="max-w-2xl">
         </button>
 
     </div>
-    <createResumeForm onSucess={()=>{
+    <CreateResumeForm onSuccess={()=>{
       setOpenCreateModal(false);
       fetchAllResumes();
 
@@ -253,13 +257,13 @@ hideHeader maxWidth="max-w-2xl">
 
   {/* delete confirmation modal */}
 
-  <Modal isOpen={showDeleteConfirm} onclose={()=> setShowDeleteConfirm(false)} title="confirmm Deletion"
+  <Modal isOpen={showDeleteConfirm} onClose={()=> setShowDeleteConfirm(false)} title="confirmm Deletion"
   showActionBtn actionBtnText='delete' actionBtnClassName='bg-red-600 hover:bg-red-700 '
   onActionClick={handleDeleteResume}>
     <div className='p-4'>
       <div className='flex flex-col item-center text-center'>
         <div className={styles.deleteIconWrapper}>
-          <LucideTrash2 className='text-orange-600' size={24}/>
+          <Trash2 className='text-orange-600' size={24}/>
          </div>
         <h3 className={styles.deleteModalTitle}>Are you sure you want to delete this resume?</h3>
         <p className={styles.deleteModalText}>This action cannot be undone.</p>

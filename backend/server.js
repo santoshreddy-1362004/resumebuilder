@@ -22,12 +22,12 @@ app.use(cors({
         'http://localhost:5176',
         'http://localhost:5177',
         'http://localhost:5178',
-        'https://cuddly-rotary-phone-7vrx9qjvj66w2vx4-5173.app.github.dev',
-        'https://cuddly-rotary-phone-7vrx9qjvj66w2vx4-5174.app.github.dev',
-        'https://cuddly-rotary-phone-7vrx9qjvj66w2vx4-5175.app.github.dev',
-        'https://cuddly-rotary-phone-7vrx9qjvj66w2vx4-5176.app.github.dev',
-        'https://cuddly-rotary-phone-7vrx9qjvj66w2vx4-5177.app.github.dev',
-        'https://cuddly-rotary-phone-7vrx9qjvj66w2vx4-5178.app.github.dev'
+        'https://didactic-guide-g45pq9v4v9j53vjxx-5173.app.github.dev',
+        'https://didactic-guide-g45pq9v4v9j53vjxx-5174.app.github.dev',
+        'https://didactic-guide-g45pq9v4v9j53vjxx-5175.app.github.dev',
+        'https://didactic-guide-g45pq9v4v9j53vjxx-5176.app.github.dev',
+        'https://didactic-guide-g45pq9v4v9j53vjxx-5177.app.github.dev',
+        'https://didactic-guide-g45pq9v4v9j53vjxx-5178.app.github.dev'
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -49,12 +49,8 @@ app.use(express.json());
 app.use('/api/auth', userRouter);
 app.use('/api/resume', resumeRouter);
 
-app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
-    setHeaders: (res, path) => {
-        res.set('Access-Control-Allow-Origin', 'https://cuddly-rotary-phone-7vrx9qjvj66w2vx4-5176.app.github.dev');
-    }
-})
-);
+// Serve static files from uploads folder with CORS
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 //routes
 app.get("/",(req,res)=>{

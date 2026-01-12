@@ -1,4 +1,4 @@
-import react from 'react';
+import React from 'react';
 import{shimmerStyle} from '../assets/dummystyle';
 import {Check} from 'react-feather';
 

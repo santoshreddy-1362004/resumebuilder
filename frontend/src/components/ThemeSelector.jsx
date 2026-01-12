@@ -1,29 +1,34 @@
-import react,{ useEffect, useRef,useState} from "react";
+import React,{ useEffect, useRef,useState, useCallback} from "react";
 import{DUMMY_RESUME_DATA, resumeTemplates} from '../utils/data';
+import Tabs from './Tabs';
+import { TemplateCard } from './Cards';
+import RenderResume from './RenderResume';
+import { Check } from 'lucide-react';
 
-import{resumeTemplates} from '../utils/data';
 const TAB_DATA=[{label:'Templates'}]
 const ThemeSelector=({selectedTheme,setSelectedTheme,resumeData,onClose})=>{
     const resumeRef=useRef(null);
     const[baseWidth,setBaseWidth]=useState(800);
 
-    //selected theme using id
-    const initialIndex =resumeTemplates.findIndex(t=>t.id===selectedTheme.id);
+    //selected theme using id - selectedTheme is a string like "01"
+    const initialIndex =resumeTemplates.findIndex(t=>t.id===selectedTheme);
     const[selectedTemplate,setSelectedTemplate] = useState({
-        theme: selectedTheme||resumeTemplates[0]?.id||"",
+        theme: selectedTheme||resumeTemplates[0]?.id||"01",
         index: initialIndex>=0 ? initialIndex:0
     })
     const[tabValue,setTabValue]=useState('Templates')
     
     const handleThemeSelection=()=>{
-        setSelectedTheme(selectedTemplate.theme)
+        console.log('Applying theme:', selectedTemplate.theme);
+        setSelectedTheme(selectedTemplate.theme);
+        console.log('Closing theme selector');
         onClose();
     }
-    const updateBaseWidth=()=>{
+    const updateBaseWidth=useCallback(()=>{
         if(resumeRef.current){
             setBaseWidth(resumeRef.current.offsetWidth);
         }
-    }
+    },[]);
 
     useEffect(()=>{
         updateBaseWidth();
@@ -31,14 +36,14 @@ const ThemeSelector=({selectedTheme,setSelectedTheme,resumeData,onClose})=>{
         return()=>{
             window.removeEventListener('resize',updateBaseWidth);
         }
-    },[])
+    },[updateBaseWidth])
      return(
         <div className="max-w-7xl mx-auto px-4">
             {/*header*/}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 p-4 sm:p-6 bg-gradient-to-r from-white to-violet-50 rounded-2xl border border-violet-100">
                 <Tabs tabs={TAB_DATA} activeTab={tabValue} setActiveTab={setTabValue}/>
-                <button className='w-full sm:w-auto flex items-center justify-center justify-center gap-3 px-6 py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-black rounded-2xl hover:scale-105 transistion-all shadow-lg hover:shadow-xl' onClick={handleThemeSelection}>
-                <check size={18}/> Apply changes
+                <button className='w-full sm:w-auto flex items-center justify-center gap-3 px-6 py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-black rounded-2xl hover:scale-105 transition-all shadow-lg hover:shadow-xl' onClick={handleThemeSelection}>
+                <Check size={18}/> Apply changes
                 </button>
 
 
@@ -50,10 +55,13 @@ const ThemeSelector=({selectedTheme,setSelectedTheme,resumeData,onClose})=>{
                             <TemplateCard key={`templates_${index}`}
                             thumbnailImg={template.thumbnailImg}
                             isSelected={selectedTemplate.index===index}
-                            onSelect={()=>setSelectedTemplate({
-                                theme:template.id,
-                                index
-                            })}
+                            onSelect={()=>{
+                                console.log('Template selected:', template.id, 'index:', index);
+                                setSelectedTemplate({
+                                    theme:template.id,
+                                    index
+                                });
+                            }}
                         />
 
                     ))}

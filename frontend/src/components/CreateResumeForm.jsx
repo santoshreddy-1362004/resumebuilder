@@ -1,9 +1,9 @@
-import react, { useState } from 'react';
-import Input, {input} from './Inputs';
+import React, { useState } from 'react';
+import { Input } from './Inputs';
 import {useNavigate} from 'react-router-dom';
-import {API_PATHS} from '../utils/apiPaths';
+import {API_PATHS} from '../utils/apiPath';
 import axiosInstance from '../utils/axiosInstance';
-const CreateResumeForm=()=>{
+const CreateResumeForm=({onSuccess})=>{
     const[title,setTitle] = useState(" ");
     const[error,setError]=useState(null);
     const navigate=useNavigate();
@@ -22,6 +22,7 @@ const CreateResumeForm=()=>{
                 title,
             });
             if(response.data?._id){
+                onSuccess?.();
                 navigate(`/resume/${response.data?._id}`);
             }
             

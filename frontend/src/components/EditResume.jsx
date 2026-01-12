@@ -1,14 +1,29 @@
-import react, { useState } from 'react';
-import Dashboard from '../pages/Dashboard';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import html2pdf from "html2pdf.js"
+import html2canvas from 'html2canvas';
 import { buttonStyles, containerStyles, iconStyles, statusStyles } from '../assets/dummystyle';
 import { TitleInput } from './Inputs';
 import DashboardLayout from './DashboardLayout';
-import { Download, Trash } from 'lucide-react';
-
-
-
-import html2pdf from "html2pdf.js"
+import { Download, Trash, Palette, AlertCircle, ArrowLeft, Loader2, Save, Check } from 'lucide-react';
 import ThemeSelector from './ThemeSelector';
+import Modal from './Modal';
+import RenderResume from './RenderResume';
+import StepProgress from './StepProgress';
+import axiosInstance from '../utils/axiosInstance';
+import { API_PATHS } from '../utils/apiPath';
+import { fixTailwindColors, dataURLtoFile } from '../utils/helper';
+import { 
+  ProfileInfoForm, 
+  ContactInfoForm, 
+  WorkExperienceForm, 
+  EducationDetailsForm, 
+  SkillsInfoForm, 
+  ProjectDetailForm, 
+  CertificationInfoForm, 
+  AdditionalInfoForm 
+} from './Forms';
 
 //resize observer
 const useResizeObserver = () => {
@@ -27,7 +42,6 @@ const useResizeObserver = () => {
 }
 
 const EditResume = () => {
-           const EditResume = () => {
   const { resumeId } = useParams()
   const navigate = useNavigate()
   const resumeDownloadRef = useRef(null)
@@ -54,7 +68,7 @@ const EditResume = () => {
       summary: "",
     },
     template: {
-      theme: "modern",
+      theme: "01",
       colorPalette: []
     },
     contactInfo: {
@@ -190,7 +204,6 @@ const EditResume = () => {
   useEffect(() => {
     calculateCompletion();
   }, [resumeData]);
-}
 
   
   // Validate Inputs
@@ -505,7 +518,23 @@ const EditResume = () => {
         throw new Error("Thumbnail element not found")
       }
 
-      const fixedThumbnail = fixTailwindColors(thumbnailElement)
+      // Get the inner content (first child) since the outer div has display:none
+      const innerElement = thumbnailElement.firstElementChild
+      if (!innerElement) {
+        throw new Error("Thumbnail content not found")
+      }
+
+      // Clone the element to avoid modifying the original
+      const fixedThumbnail = innerElement.cloneNode(true)
+      fixedThumbnail.style.position = "absolute"
+      fixedThumbnail.style.top = "-9999px"
+      fixedThumbnail.style.left = "0"
+      fixedThumbnail.style.visibility = "visible"
+      fixedThumbnail.style.display = "block"
+      document.body.appendChild(fixedThumbnail)
+
+      // Fix Tailwind colors on the clone
+      fixTailwindColors(fixedThumbnail)
 
       const thumbnailCanvas = await html2canvas(fixedThumbnail, {
         scale: 0.5,
@@ -539,7 +568,9 @@ const EditResume = () => {
       navigate("/dashboard")
     } catch (error) {
       console.error("Error Uploading Images:", error)
-      toast.error("Failed to upload images")
+      console.error("Error response:", error.response?.data)
+      console.error("Error status:", error.response?.status)
+      toast.error(error.response?.data?.message || "Failed to upload images")
     } finally {
       setIsLoading(false)
     }
@@ -642,6 +673,7 @@ const EditResume = () => {
   };
 
   const updateTheme = (theme) => {
+    console.log('UpdateTheme called with:', theme);
     setResumeData(prev => ({
       ...prev,
       template: {
@@ -649,6 +681,7 @@ const EditResume = () => {
         colorPalette: []
       }
     }));
+    console.log('Theme updated in resumeData');
   }
 
   useEffect(() => {
@@ -823,12 +856,12 @@ return (
 
           </Modal>
           {/* thumbnail issue fixed */}
-          <div style={{display:"none"}} ref={thumbnailRef}>
+          <div style={{position: 'absolute', left: '-9999px', width: '800px', height: 'auto'}} ref={thumbnailRef}>
             <div className={containerStyles.hiddenThumbnail}>
               <RenderResume key={`thumb-${resumeData?.template?.theme}`}
               templateId={resumeData?.template?.theme || ""}
               resumeData={resumeData}
-              
+              containerWidth={800}
               />
 
             </div>

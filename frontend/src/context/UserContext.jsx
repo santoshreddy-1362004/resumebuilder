@@ -1,33 +1,32 @@
 import React,{createContext,useState,useEffect} from "react";
+import axiosInstance from '../utils/axiosInstance';
+import { API_PATHS } from '../utils/apiPath';
 
 export const UserContext = createContext();
 const UserProvider=({children})=>{
     const [user,setUser]= useState(null);
-    const [loading,setLoading]=useState(false); // Set to false until we have proper API setup
+    const [loading,setLoading]=useState(true);
     
-    // Temporarily commented out until we set up axios and API paths
-    /*
     useEffect(()=>{
         if(user) return;
-    const accessToken=localStorage.getItem('token');
-    if(!accessToken){
-        setLoading(false);
-        return;
-    }
-    const fetchUser =async()=>{
-        try {
-            const response = await axiosInstance.get(API_PATHS.AUTH.GET_PROFILE);
-            setUser(response.data);
-        } catch (error) {
-            console.error("Error fetching user:", error);
-            clearUser();
-        } finally {
+        const accessToken=localStorage.getItem('token');
+        if(!accessToken){
             setLoading(false);
+            return;
         }
-    };
-    fetchUser();
+        const fetchUser =async()=>{
+            try {
+                const response = await axiosInstance.get(API_PATHS.AUTH.GET_PROFILE);
+                setUser(response.data);
+            } catch (error) {
+                console.error("Error fetching user:", error);
+                clearUser();
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchUser();
     }, [user]);
-    */
     
     
     const updateUser=(userData)=>{

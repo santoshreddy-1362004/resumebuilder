@@ -7,6 +7,10 @@ export const createResume= async(req,res)=>{
         const {title} =req.body;
            // Default template
         const defaultResumeData = {
+            template: {
+                theme: '01',
+                colorPalette: [],
+            },
             profileInfo: {
                 profileImg: null,
                 previewUrl: '',
@@ -117,6 +121,9 @@ export const getResumeById=async (req,res)=>{
 }
 export const updateResume=async (req,res)=>{
     try{
+       console.log('Update resume request for ID:', req.params.id);
+       console.log('User ID:', req.user._id);
+       
        const resume = await Resume.findOne({
         _id: req.params.id,
         userId: req.user._id
@@ -124,12 +131,17 @@ export const updateResume=async (req,res)=>{
        if(!resume){
            return res.status(404).json({message: "Resume not found"});
        }
+       
+       console.log('Updating resume with data:', JSON.stringify(req.body, null, 2));
+       
        Object.assign(resume, req.body);
        //save the updated resume
        const savedResume = await resume.save();
        res.json(savedResume);
     }
     catch(error){
+        console.error('Error updating resume:', error);
+        console.error('Error stack:', error.stack);
         res.status(500).json({
             message: "failed to update resume",
             error: error.message
@@ -147,15 +159,16 @@ try{
     if(!resume){
         return res.status(404).json({message: "Resume not found"});
     }
-    //create a upload folder
+    //create a upload folder an
     const uploadsFolder = path.join(process.cwd(), 'uploads');
+    // delete thumbnaillink
     if(resume.thumbnailLink){
-        const oldThumbnail= path.join(uploadsFolder, resume.thumbnailLink);
+        const oldThumbnail= path.join(uploadsFolder, path.basename(resume.thumbnailLink));
         if(fs.existsSync(oldThumbnail)){
             fs.unlinkSync(oldThumbnail);
         }
     }
-    if(resume.profileInfo?.profilepreviewUrl){
+    if(resume.profileInfo?.profilePreviewUrl){
         const oldProfile=path.join(
             uploadsFolder,
             path.basename(resume.profileInfo.profilePreviewUrl)

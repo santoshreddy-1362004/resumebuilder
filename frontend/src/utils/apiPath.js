@@ -1,4 +1,4 @@
-export const BASE_URL = "https://cuddly-rotary-phone-7vrx9qjvj66w2vx4-4000.app.github.dev";
+export const BASE_URL = "https://didactic-guide-g45pq9v4v9j53vjxx-4000.app.github.dev";
 
 // Routes used for frontend
 

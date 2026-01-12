@@ -41,7 +41,8 @@ const TemplateOne = ({ resumeData = {}, colorPalette, containerWidth }) => {
     if (resumeRef.current && containerWidth > 0) {
       const actualWidth = resumeRef.current.offsetWidth;
       setBaseWidth(actualWidth);
-      setScale(containerWidth / actualWidth);
+      const newScale = containerWidth / actualWidth;
+      setScale(newScale);
     }
   }, [containerWidth]);
 
