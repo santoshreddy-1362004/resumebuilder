@@ -7,6 +7,7 @@ import userRouter from "./routes/userRouter.js";
 import path from 'path';
 import {fileURLToPath} from 'url';
 import resumeRouter from "./routes/resumeRouter.js";
+import { requestMetricsMiddleware, register } from "./metrics.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -22,12 +23,12 @@ app.use(cors({
         'http://localhost:5176',
         'http://localhost:5177',
         'http://localhost:5178',
-        'https://didactic-guide-g45pq9v4v9j53vjxx-5173.app.github.dev',
-        'https://didactic-guide-g45pq9v4v9j53vjxx-5174.app.github.dev',
-        'https://didactic-guide-g45pq9v4v9j53vjxx-5175.app.github.dev',
-        'https://didactic-guide-g45pq9v4v9j53vjxx-5176.app.github.dev',
-        'https://didactic-guide-g45pq9v4v9j53vjxx-5177.app.github.dev',
-        'https://didactic-guide-g45pq9v4v9j53vjxx-5178.app.github.dev'
+        'https://bookish-yodel-pjg6rv5j5x7pc6wpq-5173.app.github.dev',
+        'https://bookish-yodel-pjg6rv5j5x7pc6wpq-5174.app.github.dev',
+        'https://bookish-yodel-pjg6rv5j5x7pc6wpq-5175.app.github.dev',
+        'https://bookish-yodel-pjg6rv5j5x7pc6wpq-5176.app.github.dev',
+        'https://bookish-yodel-pjg6rv5j5x7pc6wpq-5177.app.github.dev',
+        'https://bookish-yodel-pjg6rv5j5x7pc6wpq-5178.app.github.dev'
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -37,6 +38,15 @@ app.use(cors({
 }));
 
 connectDB();
+
+// Metrics middleware - must be early to track all requests
+app.use(requestMetricsMiddleware);
+
+// Metrics endpoint
+app.get('/metrics', async (req, res) => {
+    res.set('Content-Type', register.contentType);
+    res.end(await register.metrics());
+});
 
 // Debug middleware to log all requests
 app.use((req, res, next) => {

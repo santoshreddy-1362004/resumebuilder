@@ -1,4 +1,8 @@
-export const BASE_URL = "https://didactic-guide-g45pq9v4v9j53vjxx-4000.app.github.dev";
+// Use relative paths so Nginx proxy handles routing
+// In Docker/production, /api routes to backend via Nginx
+// In local dev (Vite), use localhost:4000
+const isDevelopment = import.meta.env.MODE === 'development' && !window.location.hostname.includes('github.dev');
+export const BASE_URL = isDevelopment ? "http://localhost:4000" : "";
 
 // Routes used for frontend
 
