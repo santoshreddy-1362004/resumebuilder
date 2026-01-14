@@ -2,7 +2,11 @@ import mongoose from 'mongoose';
 
 export const connectDB = async () => {
     try {
-        const mongoURI = process.env.MONGO_URI || 'mongodb+srv://santosh1362004:resume1234@cluster0.wlo6xch.mongodb.net/resumebuilder';
+        const mongoURI = process.env.MONGO_URI;
+        
+        if (!mongoURI) {
+            throw new Error('MONGO_URI environment variable is not set');
+        }
         
         await mongoose.connect(mongoURI);
         console.log('✅ MongoDB connected successfully');
