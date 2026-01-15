@@ -1,10 +1,68 @@
-# 📝 Resume Builder
+# 📝 Production Grade Resume Builder
 
-A modern, full-stack web application for creating professional resumes with multiple templates and real-time preview. Built with React, Node.js, and MongoDB, featuring comprehensive monitoring with Prometheus and Grafana.
+A production-ready, full-stack web application for creating professional resumes with multiple templates, real-time preview, and enterprise-level monitoring. Built with modern technologies including React, Node.js, MongoDB, Docker, and integrated CI/CD pipeline with comprehensive observability using Prometheus and Grafana.
+
+## 🚀 Technology Stack
+
+![React](https://img.shields.io/badge/React-18.x-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![Node.js](https://img.shields.io/badge/Node.js-20-339933?style=for-the-badge&logo=node.js&logoColor=white)
+![Express](https://img.shields.io/badge/Express-4.x-000000?style=for-the-badge&logo=express&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Prometheus](https://img.shields.io/badge/Prometheus-Metrics-E6522C?style=for-the-badge&logo=prometheus&logoColor=white)
+![Grafana](https://img.shields.io/badge/Grafana-Dashboards-F46800?style=for-the-badge&logo=grafana&logoColor=white)
+![Nginx](https://img.shields.io/badge/Nginx-Proxy-009639?style=for-the-badge&logo=nginx&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-CI%2FCD-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-Build-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+![JWT](https://img.shields.io/badge/JWT-Auth-000000?style=for-the-badge&logo=json-web-tokens&logoColor=white)
+![Azure](https://img.shields.io/badge/Azure-Container_Apps-0078D4?style=for-the-badge&logo=microsoft-azure&logoColor=white)
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Node](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen.svg)
-![React](https://img.shields.io/badge/react-18.x-61dafb.svg)
+![Build](https://img.shields.io/badge/build-passing-brightgreen.svg)
+
+## 💡 Skills & Technologies Demonstrated
+
+This project showcases expertise in modern full-stack development and DevOps practices:
+
+### **Frontend Development**
+- ⚛️ **React 18** - Component-based UI architecture with hooks and context
+- ⚡ **Vite** - Modern build tool for fast development and optimized production builds
+- 🎨 **Responsive Design** - Mobile-first approach with custom CSS
+- 🔄 **State Management** - React Context API for global state
+- 🌐 **SPA Routing** - React Router for seamless navigation
+
+### **Backend Development**
+- 🟢 **Node.js & Express** - RESTful API design and implementation
+- 🗄️ **MongoDB & Mongoose** - NoSQL database design and ODM patterns
+- 🔐 **Authentication & Security** - JWT tokens, bcrypt password hashing, CORS configuration
+- 📁 **File Handling** - Multer for image uploads and storage
+- ✅ **Input Validation** - Schema validation and error handling
+
+### **DevOps & Infrastructure**
+- 🐳 **Docker** - Multi-stage containerization for optimized images
+- 🔧 **Docker Compose** - Multi-container orchestration with networking and volumes
+- 🔄 **CI/CD** - GitHub Actions automated build and deployment pipeline
+- 📦 **Container Registry** - Docker Hub integration for image distribution
+- 🌐 **Nginx** - Reverse proxy configuration, static file serving, gzip compression
+
+### **Monitoring & Observability**
+- 📊 **Prometheus** - Metrics collection and time-series monitoring
+- 📈 **Grafana** - Dashboard creation and data visualization
+- 🔍 **Custom Metrics** - Application-level instrumentation (HTTP, business, resource metrics)
+- 🏥 **Health Checks** - Container health monitoring and auto-recovery
+
+### **Cloud & Deployment**
+- ☁️ **Azure Container Apps** - Cloud-native containerized deployments
+- 🗄️ **MongoDB Atlas** - Cloud database management
+- 🌍 **Multi-platform Deployment** - Render, Railway, Vercel strategies
+- 🔑 **Environment Management** - Secure secret handling across environments
+
+### **Software Engineering Practices**
+- 📝 **Git & Version Control** - Conventional commits, branching strategies
+- 🏗️ **Code Organization** - MVC architecture, modular design
+- 🔒 **Security Best Practices** - Secret management, CORS, input sanitization
+- 📚 **Documentation** - Comprehensive README, API documentation, deployment guides
+- ⚙️ **Configuration Management** - Environment-based configs, .dockerignore, .gitignore
 
 ## 🌟 Features
 
@@ -17,6 +75,7 @@ A modern, full-stack web application for creating professional resumes with mult
 - **Cloud Storage** - MongoDB Atlas for reliable data persistence
 - **Production Monitoring** - Prometheus metrics and Grafana dashboards
 - **Containerized Deployment** - Docker and Docker Compose support
+- **Automated CI/CD** - GitHub Actions pipeline for continuous delivery
 
 ## 🛠️ Tech Stack
 
