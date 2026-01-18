@@ -45,6 +45,8 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/resumebuilder-frontend:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/resumebuilder-frontend:${{ steps.commit.outputs.sha }}
+          build-args: |
+            VITE_API_URL=${{ secrets.VITE_API_URL || 'https://resumebuilder-backend-cy3m.onrender.com' }}
           cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/resumebuilder-frontend:buildcache
           cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/resumebuilder-frontend:buildcache,mode=max
 
