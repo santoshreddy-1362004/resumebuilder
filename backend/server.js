@@ -15,21 +15,31 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT=4000;
 
+// Build CORS allowlist from env for flexibility across deployments
+const envOrigins = (process.env.ALLOWED_ORIGINS || "")
+  .split(",")
+  .map(origin => origin.trim())
+  .filter(Boolean);
+
+const defaultOrigins = [
+    'http://localhost:5173',
+    'http://localhost:5174', 
+    'http://localhost:5175',
+    'http://localhost:5176',
+    'http://localhost:5177',
+    'http://localhost:5178',
+    'https://bookish-yodel-pjg6rv5j5x7pc6wpq-5173.app.github.dev',
+    'https://bookish-yodel-pjg6rv5j5x7pc6wpq-5174.app.github.dev',
+    'https://bookish-yodel-pjg6rv5j5x7pc6wpq-5175.app.github.dev',
+    'https://bookish-yodel-pjg6rv5j5x7pc6wpq-5176.app.github.dev',
+    'https://bookish-yodel-pjg6rv5j5x7pc6wpq-5177.app.github.dev',
+    'https://bookish-yodel-pjg6rv5j5x7pc6wpq-5178.app.github.dev'
+];
+
+const allowedOrigins = envOrigins.length ? envOrigins : [...defaultOrigins];
+
 app.use(cors({
-    origin: [
-        'http://localhost:5173',
-        'http://localhost:5174', 
-        'http://localhost:5175',
-        'http://localhost:5176',
-        'http://localhost:5177',
-        'http://localhost:5178',
-        'https://bookish-yodel-pjg6rv5j5x7pc6wpq-5173.app.github.dev',
-        'https://bookish-yodel-pjg6rv5j5x7pc6wpq-5174.app.github.dev',
-        'https://bookish-yodel-pjg6rv5j5x7pc6wpq-5175.app.github.dev',
-        'https://bookish-yodel-pjg6rv5j5x7pc6wpq-5176.app.github.dev',
-        'https://bookish-yodel-pjg6rv5j5x7pc6wpq-5177.app.github.dev',
-        'https://bookish-yodel-pjg6rv5j5x7pc6wpq-5178.app.github.dev'
-    ],
+    origin: allowedOrigins,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
