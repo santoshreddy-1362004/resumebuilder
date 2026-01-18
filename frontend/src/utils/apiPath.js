@@ -2,7 +2,7 @@
 // In Docker/production, /api routes to backend via Nginx
 // In local dev (Vite), use localhost:4000
 const isDevelopment = import.meta.env.MODE === 'development' && !window.location.hostname.includes('github.dev');
-export const BASE_URL = isDevelopment ? "http://localhost:4000" : "";
+export const BASE_URL = isDevelopment ? "http://localhost:4000" : (import.meta.env.VITE_API_URL || "");
 
 // Routes used for frontend
 
