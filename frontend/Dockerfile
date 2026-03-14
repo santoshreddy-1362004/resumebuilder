@@ -22,11 +22,17 @@ RUN VITE_API_URL=$VITE_API_URL npm run build
 # Stage 2: Runtime - Serve with Nginx
 FROM nginx:alpine
 
-# Copy nginx config
-COPY nginx.conf /etc/nginx/nginx.conf
+# Default backend URL (Docker Compose uses backend:4000, Render uses its own URL)
+ENV BACKEND_URL=http://backend:4000
+
+# Copy nginx config as template
+COPY nginx.conf /etc/nginx/nginx.conf.template
 
 # Copy built app from builder
 COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Substitute env vars in nginx config at container startup, then start nginx
+CMD ["/bin/sh", "-c", "envsubst '${BACKEND_URL}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"]
 
 # Expose port
 EXPOSE 80
@@ -34,6 +40,3 @@ EXPOSE 80
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD wget --quiet --tries=1 --spider http://localhost:80/ || exit 1
-
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]

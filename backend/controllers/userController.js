@@ -1,6 +1,7 @@
 import User from '../models/userModel.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { getOrSetCache } from '../config/redis.js';
 
 //generate a token jwt
 
@@ -73,7 +74,11 @@ export const loginUser= async(req,res)=>{
 //get user profile
 export const getUserProfile = async(req,res)=>{
     try{
-        const user=await User.findById(req.user._id).select('-password');
+        const user = await getOrSetCache(
+            `user:profile:${req.user._id}`,
+            () => User.findById(req.user._id).select('-password').lean(),
+            600
+        );
         if(!user){
             return res.status(404).json({message: 'User not found'});
         }

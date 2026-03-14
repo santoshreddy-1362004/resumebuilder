@@ -1,6 +1,7 @@
 import Resume from "../models/resumeModel.js";
 import fs from "fs";
 import path from "path";
+import { getOrSetCache, invalidateCache, invalidatePattern } from "../config/redis.js";
 
 export const createResume= async(req,res)=>{
     try{
@@ -78,6 +79,8 @@ export const createResume= async(req,res)=>{
             ...defaultResumeData,
             ...req.body
         });
+        // Invalidate user's resume list cache
+        await invalidateCache(`resumes:user:${req.user._id}`);
         res.status(201).json(newResume);
     }
     catch(error){
@@ -90,9 +93,11 @@ export const createResume= async(req,res)=>{
 
 export  const getUserResume= async(req,res)=>{
     try{
-        const resumes=await Resume.find({userId: req.user._id}).sort({
-            updatedAt: -1
-        });
+        const resumes = await getOrSetCache(
+            `resumes:user:${req.user._id}`,
+            () => Resume.find({userId: req.user._id}).sort({ updatedAt: -1 }).lean(),
+            300
+        );
         res.status(200).json(resumes);
     }
     catch(error){
@@ -105,7 +110,11 @@ export  const getUserResume= async(req,res)=>{
 
 export const getResumeById=async (req,res)=>{
     try{
-        const resume =await Resume.findOne({_id: req.params.id, userId: req.user._id});
+        const resume = await getOrSetCache(
+            `resume:${req.params.id}:${req.user._id}`,
+            () => Resume.findOne({_id: req.params.id, userId: req.user._id}).lean(),
+            300
+        );
         if(!resume){
             return res.status(404).json({message: "Resume not found"});
         }
@@ -137,6 +146,11 @@ export const updateResume=async (req,res)=>{
        Object.assign(resume, req.body);
        //save the updated resume
        const savedResume = await resume.save();
+       // Invalidate caches for this resume and user's list
+       await invalidateCache(
+           `resume:${req.params.id}:${req.user._id}`,
+           `resumes:user:${req.user._id}`
+       );
        res.json(savedResume);
     }
     catch(error){
@@ -187,6 +201,11 @@ try{
     if(!deleted){
         return res.status(404).json({message: "Resume not found"});
     }
+    // Invalidate caches
+    await invalidateCache(
+        `resume:${req.params.id}:${req.user._id}`,
+        `resumes:user:${req.user._id}`
+    );
     res.json({message: "Resume deleted successfully"});
 
 }
