@@ -173,35 +173,23 @@ Deployment flow:
 
 ## Deployment Proof (Screenshots)
 
-All proof images are included below in filename order (`pro2` -> `pro9`) so the deployment story is easy to follow during interviews.
+### Terraform Apply Proof
 
-### Proof 1 - Terraform Inputs and AWS CLI Setup (`pro2.png`)
+Terraform apply completed successfully with ALB and app outputs:
 
-![Terraform inputs and AWS CLI setup (redacted)](pics/redacted/pro2-redacted.svg)
+![Terraform apply output](pics/pro7.png)
 
-### Proof 2 - Terraform Apply Initialization (`pro3.png`)
+### AWS Infrastructure Proof
 
-![Terraform apply initialization (redacted)](pics/redacted/pro3-redacted.svg)
+EC2 instance running status in AWS console:
 
-### Proof 3 - Resource Creation Complete (`pro4.png`)
+![AWS EC2 instance running](pics/pro9.png)
 
-![Terraform apply complete output (redacted)](pics/redacted/pro4-redacted.svg)
+### Application Reachability Proof
 
-### Proof 4 - Terraform Outputs and SSH Command (`pro7.png`)
+Application reachable through ALB URL:
 
-![Terraform outputs and SSH command (redacted)](pics/redacted/pro7-redacted.svg)
-
-### Proof 5 - Application Reachability Through ALB (`pro8.png`)
-
-![Application landing page through ALB](pics/pro8.png)
-
-### Proof 6 - EC2 Instance Running Status (`pro9.png`)
-
-![EC2 instance running status in AWS console (redacted)](pics/redacted/pro9-redacted.svg)
-
-### Security Note
-
-These screenshots are useful for interview proof, but some frames may contain environment details. Redact sensitive values before public sharing outside interview/demo contexts.
+![Application landing page via ALB](pics/pro8.png)
 
 ## Monitoring and Observability
 
