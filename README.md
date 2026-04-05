@@ -60,6 +60,20 @@ Backend and DevOps emphasis in this architecture:
 - Redis is a first-class component in the data path, used for cached reads and explicit invalidation.
 - CI/CD and infrastructure automation are shown together, from GitHub push to Docker image distribution and EC2 runtime bootstrap.
 
+## Render Deployment Architecture (Interview Demo)
+
+This diagram focuses on the deployment setup used for live interview showcase on Render.
+
+![ResumeBuilder Render Architecture](docs/architecture/resumebuilder-render-architecture.svg)
+
+### Render Notes
+
+- Frontend and backend run as separate Render web services.
+- Frontend uses Nginx to proxy `/api` and `/uploads` to backend.
+- Backend CORS allows `.onrender.com` origins.
+- MongoDB Atlas and Upstash Redis remain external managed services.
+- CI image pipeline remains GitHub Actions -> Docker Hub -> Render redeploy.
+
 ### Architecture Notes
 
 - External user traffic enters through AWS Application Load Balancer.

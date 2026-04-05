@@ -75,20 +75,20 @@
 
   <text class="layer-title" x="1130" y="160">Data Services</text>
   <rect class="stroke-data" x="1120" y="180" rx="10" ry="10" width="280" height="110" />
-  <text class="box-title" x="1140" y="212">MongoDB Atlas</text>
-  <text class="box-text" x="1140" y="232">Users and Resumes collections</text>
-  <text class="box-text" x="1140" y="250">Mongoose CRUD operations</text>
+  <text class="box-title" x="1140" y="212">Upstash Redis</text>
+  <text class="box-text" x="1140" y="232">Read cache layer</text>
+  <text class="box-text" x="1140" y="250">getOrSetCache + invalidation</text>
 
   <rect class="stroke-data" x="1450" y="180" rx="10" ry="10" width="280" height="110" />
-  <text class="box-title" x="1470" y="212">Upstash Redis</text>
-  <text class="box-text" x="1470" y="232">Read cache layer</text>
-  <text class="box-text" x="1470" y="250">getOrSetCache + invalidation</text>
+  <text class="box-title" x="1470" y="212">MongoDB Atlas</text>
+  <text class="box-text" x="1470" y="232">Users and Resumes collections</text>
+  <text class="box-text" x="1470" y="250">Mongoose CRUD operations</text>
 
   <line x1="690" y1="458" x2="1120" y2="240" stroke="#475569" stroke-width="2" marker-end="url(#arrow)" />
-  <text class="line-label" x="885" y="308">Mongoose CRUD</text>
+  <text class="line-label" x="885" y="308">cache reads/writes</text>
 
   <line x1="690" y1="540" x2="1450" y2="240" stroke="#475569" stroke-width="2" marker-end="url(#arrow)" />
-  <text class="line-label" x="1060" y="400">cache reads/writes</text>
+  <text class="line-label" x="1060" y="400">Mongoose CRUD</text>
 
   <text class="layer-title" x="1130" y="355">Observability</text>
   <rect class="stroke-ops" x="1120" y="375" rx="10" ry="10" width="280" height="110" />
@@ -134,5 +134,5 @@
   <line x1="1000" y1="780" x2="1050" y2="780" stroke="#475569" stroke-width="2" marker-end="url(#arrow)" />
   <line x1="1330" y1="780" x2="1380" y2="780" stroke="#475569" stroke-width="2" marker-end="url(#arrow)" />
 
-  <text class="small" x="70" y="900">Legend: Blue = Application, Purple = Data layer (MongoDB + Redis), Red = Monitoring, Teal = CI/CD + IaC, Amber = AWS edge/runtime.</text>
+  <text class="small" x="70" y="900">Legend: Blue = Application, Purple = Data layer (Redis + MongoDB), Red = Monitoring, Teal = CI/CD + IaC, Amber = AWS edge/runtime.</text>
 </svg>

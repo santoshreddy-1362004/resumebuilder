@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1700" height="940" viewBox="0 0 1700 940" role="img" aria-labelledby="title desc">
+  <title id="title">ResumeBuilder Render Architecture</title>
+  <desc id="desc">Render deployment architecture for ResumeBuilder showing frontend and backend web services, external data stores, and CI image flow.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f8fafc; }
+      .title { font: 700 28px Arial, sans-serif; fill: #0f172a; }
+      .subtitle { font: 600 14px Arial, sans-serif; fill: #334155; }
+      .layer-title { font: 700 16px Arial, sans-serif; fill: #0f172a; }
+      .box-title { font: 700 14px Arial, sans-serif; fill: #0f172a; }
+      .box-text { font: 400 12px Arial, sans-serif; fill: #1f2937; }
+      .line-label { font: 600 11px Arial, sans-serif; fill: #334155; }
+      .small { font: 400 11px Arial, sans-serif; fill: #475569; }
+      .panel { stroke: #94a3b8; stroke-width: 1.5; fill: #ffffff; }
+      .app { stroke: #2563eb; stroke-width: 2; fill: #eff6ff; }
+      .data { stroke: #7c3aed; stroke-width: 2; fill: #f5f3ff; }
+      .ops { stroke: #0f766e; stroke-width: 2; fill: #f0fdfa; }
+      .edge { stroke: #d97706; stroke-width: 2; fill: #fffbeb; }
+    </style>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,3 L0,6 Z" fill="#475569" />
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1700" height="940" />
+  <text class="title" x="36" y="52">ResumeBuilder - Render Deployment Architecture</text>
+  <text class="subtitle" x="36" y="78">Interview demo deployment with managed web services and external data stores</text>
+
+  <rect class="panel" x="28" y="108" width="1644" height="800" rx="10" ry="10" />
+
+  <text class="layer-title" x="64" y="156">Client Entry</text>
+  <rect class="edge" x="54" y="174" width="250" height="90" rx="10" ry="10" />
+  <text class="box-title" x="76" y="208">End User</text>
+  <text class="box-text" x="76" y="228">Browser / Mobile</text>
+
+  <rect class="edge" x="360" y="174" width="320" height="90" rx="10" ry="10" />
+  <text class="box-title" x="382" y="208">Render Edge + TLS</text>
+  <text class="box-text" x="382" y="228">Public HTTPS endpoint routing</text>
+
+  <line x1="304" y1="219" x2="360" y2="219" stroke="#475569" stroke-width="2" marker-end="url(#arrow)" />
+  <text class="line-label" x="314" y="205">HTTPS</text>
+
+  <text class="layer-title" x="64" y="320">Render Runtime (Interview Demo)</text>
+  <rect class="edge" x="54" y="338" width="1020" height="300" rx="12" ry="12" />
+  <text class="box-title" x="74" y="366">Render Project: 2 Web Services</text>
+
+  <rect class="panel" x="86" y="390" width="956" height="225" rx="10" ry="10" />
+
+  <rect class="app" x="118" y="428" width="275" height="155" rx="10" ry="10" />
+  <text class="box-title" x="140" y="458">Frontend Web Service</text>
+  <text class="box-text" x="140" y="478">React app served by Nginx</text>
+  <text class="box-text" x="140" y="496">Routes /api and /uploads to backend</text>
+  <text class="box-text" x="140" y="514">BACKEND_URL env substitution</text>
+
+  <rect class="app" x="445" y="428" width="275" height="155" rx="10" ry="10" />
+  <text class="box-title" x="467" y="458">Backend Web Service</text>
+  <text class="box-text" x="467" y="478">Node.js + Express APIs</text>
+  <text class="box-text" x="467" y="496">JWT auth + resume CRUD + uploads</text>
+  <text class="box-text" x="467" y="514">/metrics and redis-health endpoints</text>
+
+  <rect class="data" x="772" y="428" width="240" height="155" rx="10" ry="10" />
+  <text class="box-title" x="794" y="458">Uploads Storage</text>
+  <text class="box-text" x="794" y="478">Service filesystem</text>
+  <text class="box-text" x="794" y="496">(ephemeral on redeploy)</text>
+
+  <line x1="680" y1="219" x2="254" y2="428" stroke="#475569" stroke-width="2" marker-end="url(#arrow)" />
+  <text class="line-label" x="472" y="314">Route to frontend</text>
+
+  <line x1="393" y1="506" x2="445" y2="506" stroke="#475569" stroke-width="2" marker-end="url(#arrow)" />
+  <text class="line-label" x="404" y="493">/api, /uploads</text>
+
+  <line x1="720" y1="506" x2="772" y2="506" stroke="#475569" stroke-width="2" marker-end="url(#arrow)" />
+  <text class="line-label" x="731" y="493">file I/O</text>
+
+  <text class="layer-title" x="1130" y="156">External Data Services</text>
+  <rect class="data" x="1120" y="174" width="260" height="110" rx="10" ry="10" />
+  <text class="box-title" x="1142" y="206">Upstash Redis</text>
+  <text class="box-text" x="1142" y="226">Caching layer</text>
+  <text class="box-text" x="1142" y="244">getOrSetCache + invalidation</text>
+
+  <rect class="data" x="1410" y="174" width="260" height="110" rx="10" ry="10" />
+  <text class="box-title" x="1432" y="206">MongoDB Atlas</text>
+  <text class="box-text" x="1432" y="226">Primary persistent database</text>
+  <text class="box-text" x="1432" y="244">Users + Resumes collections</text>
+
+  <line x1="720" y1="458" x2="1120" y2="230" stroke="#475569" stroke-width="2" marker-end="url(#arrow)" />
+  <text class="line-label" x="900" y="312">cache reads/writes</text>
+
+  <line x1="720" y1="544" x2="1410" y2="230" stroke="#475569" stroke-width="2" marker-end="url(#arrow)" />
+  <text class="line-label" x="1058" y="402">Mongoose CRUD</text>
+
+  <text class="layer-title" x="64" y="704">Delivery Pipeline</text>
+  <rect class="ops" x="54" y="722" width="280" height="125" rx="10" ry="10" />
+  <text class="box-title" x="76" y="754">GitHub Repository</text>
+  <text class="box-text" x="76" y="774">Push to main branch</text>
+
+  <rect class="ops" x="384" y="722" width="280" height="125" rx="10" ry="10" />
+  <text class="box-title" x="406" y="754">GitHub Actions</text>
+  <text class="box-text" x="406" y="774">Build and push Docker images</text>
+
+  <rect class="ops" x="714" y="722" width="280" height="125" rx="10" ry="10" />
+  <text class="box-title" x="736" y="754">Docker Hub</text>
+  <text class="box-text" x="736" y="774">Frontend + backend image tags</text>
+
+  <rect class="ops" x="1044" y="722" width="330" height="125" rx="10" ry="10" />
+  <text class="box-title" x="1066" y="754">Render Redeploy</text>
+  <text class="box-text" x="1066" y="774">Pull latest image and restart services</text>
+
+  <line x1="334" y1="784" x2="384" y2="784" stroke="#475569" stroke-width="2" marker-end="url(#arrow)" />
+  <line x1="664" y1="784" x2="714" y2="784" stroke="#475569" stroke-width="2" marker-end="url(#arrow)" />
+  <line x1="994" y1="784" x2="1044" y2="784" stroke="#475569" stroke-width="2" marker-end="url(#arrow)" />
+
+  <text class="small" x="66" y="884">Notes: CORS allows onrender.com domains in backend. Frontend uses VITE_API_URL and Nginx BACKEND_URL routing. Redis and MongoDB stay external and persistent.</text>
+</svg>
