@@ -1,0 +1,23 @@
+project_name      = "resumebuilder"
+aws_region        = "ap-south-1"
+instance_type     = "t3.micro"
+key_name          = "your-keypair-name"
+ssh_allowed_cidr  = "YOUR_PUBLIC_IP/32"
+
+backend_image     = "2004369/resumebuilder-backend:latest"
+frontend_image    = "2004369/resumebuilder-frontend:latest"
+
+mongo_uri         = "mongodb+srv://username:password@cluster.mongodb.net/resumebuilder"
+redis_url         = "rediss://default:password@your-upstash-host:6379"
+jwt_secret        = "replace-with-a-strong-random-secret"
+
+# Optional: comma-separated list if you need strict CORS for direct backend access
+allowed_origins   = ""
+
+# Optional: set ACM cert ARN for HTTPS on ALB
+certificate_arn   = ""
+
+tags = {
+  Environment = "demo"
+  Owner       = "student"
+}

@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  backend:
+    image: ${backend_image}
+    container_name: resumebuilder-backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "${backend_port}:4000"
+    volumes:
+      - uploads:/app/uploads
+
+  frontend:
+    image: ${frontend_image}
+    container_name: resumebuilder-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      - BACKEND_URL=http://backend:4000
+    ports:
+      - "${frontend_port}:80"
+
+volumes:
+  uploads:

@@ -1,0 +1,41 @@
+#!/bin/bash
+set -euxo pipefail
+
+dnf update -y
+dnf install -y docker
+
+if ! docker compose version >/dev/null 2>&1; then
+	arch="$(uname -m)"
+	case "$arch" in
+		x86_64) compose_arch="x86_64" ;;
+		aarch64) compose_arch="aarch64" ;;
+		*)
+			echo "Unsupported architecture for Docker Compose plugin: $arch"
+			exit 1
+			;;
+	esac
+
+	mkdir -p /usr/local/lib/docker/cli-plugins
+	curl -fsSL "https://github.com/docker/compose/releases/download/v2.29.7/docker-compose-linux-$${compose_arch}" -o /usr/local/lib/docker/cli-plugins/docker-compose
+	chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+fi
+
+systemctl enable docker
+systemctl start docker
+usermod -aG docker ec2-user
+
+mkdir -p /opt/resumebuilder
+
+cat <<'EOF' | base64 -d > /opt/resumebuilder/.env
+${env_b64}
+EOF
+
+cat <<'EOF' | base64 -d > /opt/resumebuilder/docker-compose.yml
+${compose_b64}
+EOF
+
+chmod 600 /opt/resumebuilder/.env
+
+cd /opt/resumebuilder
+docker compose pull
+docker compose up -d
