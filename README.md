@@ -173,21 +173,35 @@ Deployment flow:
 
 ## Deployment Proof (Screenshots)
 
-### AWS Infrastructure Proof
+All proof images are included below in filename order (`pro2` -> `pro9`) so the deployment story is easy to follow during interviews.
 
-EC2 instance running status in AWS console:
+### Proof 1 - Terraform Inputs and AWS CLI Setup (`pro2.png`)
 
-![AWS EC2 instance running](pics/pro9.png)
+![Terraform inputs and AWS CLI setup](pics/pro2.png)
 
-### Application Reachability Proof
+### Proof 2 - Terraform Apply Initialization (`pro3.png`)
 
-Application reachable through ALB URL:
+![Terraform apply initialization](pics/pro3.png)
 
-![Application landing page via ALB](pics/pro8.png)
+### Proof 3 - Resource Creation Complete (`pro4.png`)
 
-### Security Note on Screenshots
+![Terraform apply complete output](pics/pro4.png)
 
-Some additional screenshots in the `pics` folder include sensitive terminal/env information. Those are intentionally not embedded in this README for security hygiene in public interview sharing.
+### Proof 4 - Terraform Outputs and SSH Command (`pro7.png`)
+
+![Terraform outputs and SSH command](pics/pro7.png)
+
+### Proof 5 - Application Reachability Through ALB (`pro8.png`)
+
+![Application landing page through ALB](pics/pro8.png)
+
+### Proof 6 - EC2 Instance Running Status (`pro9.png`)
+
+![EC2 instance running status in AWS console](pics/pro9.png)
+
+### Security Note
+
+These screenshots are useful for interview proof, but some frames may contain environment details. Redact sensitive values before public sharing outside interview/demo contexts.
 
 ## Monitoring and Observability
 
