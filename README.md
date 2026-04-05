@@ -1,6 +1,6 @@
 # ResumeBuilder
 
-Production-grade resume builder built with a modern MERN architecture, containerized delivery, infrastructure automation, and observability-first operations.
+A production-style resume builder focused on backend quality, containerized delivery, caching, and infrastructure automation.
 
 ![License](https://img.shields.io/badge/License-MIT-181717?style=for-the-badge&logo=opensourceinitiative&logoColor=white)
 ![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=0A0A0A)
@@ -9,133 +9,63 @@ Production-grade resume builder built with a modern MERN architecture, container
 ![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
 ![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
-![Terraform](https://img.shields.io/badge/Terraform-844FBA?style=for-the-badge&logo=terraform&logoColor=white)
-![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)
+![Nginx](https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=nginx&logoColor=white)
 ![Prometheus](https://img.shields.io/badge/Prometheus-E6522C?style=for-the-badge&logo=prometheus&logoColor=white)
 ![Grafana](https://img.shields.io/badge/Grafana-F46800?style=for-the-badge&logo=grafana&logoColor=white)
-![Nginx](https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=nginx&logoColor=white)
+![Terraform](https://img.shields.io/badge/Terraform-844FBA?style=for-the-badge&logo=terraform&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)
 
 <p align="left">
-  <img src="https://skillicons.dev/icons?i=react,vite,nodejs,express,mongodb,redis,docker,githubactions,terraform,prometheus,grafana,nginx,aws" alt="Core technology logos" />
+  <img src="https://skillicons.dev/icons?i=nodejs,express,mongodb,redis,docker,githubactions,terraform,aws,react,vite,nginx,prometheus,grafana" alt="Tech stack logos" />
 </p>
 
 ## Table of Contents
 
-1. Project Summary
-2. Architecture Diagram
-3. Key Features
-4. Tech Stack
-5. Backend Implementation Details
-6. DevOps Implementation Details
-7. Repository Structure
-8. Local Development
-9. Monitoring
-10. AWS Deployment (Terraform)
-11. What You Built (Backend + DevOps Highlight)
+1. Core Architecture
+2. Repository Structure
+3. Backend Highlights
+4. Docker Build Strategy
+5. Docker Compose Stack
+6. Redis Caching Design
+7. Terraform Infrastructure (AWS)
+8. Deployment Proof (Screenshots)
+9. Monitoring and Observability
+10. Local Setup
+11. Render Deployment (Live Demo)
 12. License
 13. Author
 
-## Project Summary
+## Core Architecture
 
-ResumeBuilder helps users create, edit, customize, and export professional resumes through a responsive web application.
-
-What this project demonstrates clearly:
-
-- End-to-end full-stack engineering with React + Node.js + MongoDB
-- Secure backend design with JWT auth, password hashing, and protected APIs
-- Redis-based read caching and cache invalidation patterns
-- Dockerized app delivery with Nginx reverse proxy integration
-- Monitoring setup with Prometheus metrics and Grafana dashboards
-- CI pipeline that builds and pushes versioned images to Docker Hub
-- Infrastructure as Code using Terraform for AWS EC2 + ALB deployment
-
-## Architecture Diagram
-
-The architecture is shown below as a static SVG to ensure consistent rendering on GitHub, VS Code, and markdown preview tools.
+Main project architecture (backend + DevOps focus):
 
 ![ResumeBuilder Complete Architecture](docs/architecture/resumebuilder-architecture.svg)
 
-Backend and DevOps emphasis in this architecture:
+## Repository Structure
 
-- Redis is a first-class component in the data path, used for cached reads and explicit invalidation.
-- CI/CD and infrastructure automation are shown together, from GitHub push to Docker image distribution and EC2 runtime bootstrap.
+```text
+.
+├── backend/                  # Express API, models, controllers, middleware
+├── frontend/                 # React app (Vite) + Nginx runtime config
+├── docker-compose.yml        # App + monitoring local orchestration
+├── prometheus/               # Prometheus configuration
+├── grafana/                  # Dashboards and provisioning
+├── infra/ec2-compose-alb/    # Terraform for AWS EC2 + ALB stack
+├── docs/architecture/        # Architecture SVG diagrams
+└── pics/                     # Deployment proof screenshots
+```
 
-## Render Deployment Architecture (Interview Demo)
+## Backend Highlights
 
-This diagram focuses on the deployment setup used for live interview showcase on Render.
+### API Design
 
-![ResumeBuilder Render Architecture](docs/architecture/resumebuilder-render-architecture.svg)
-
-### Render Notes
-
-- Frontend and backend run as separate Render web services.
-- Frontend uses Nginx to proxy `/api` and `/uploads` to backend.
-- Backend CORS allows `.onrender.com` origins.
-- MongoDB Atlas and Upstash Redis remain external managed services.
-- CI image pipeline remains GitHub Actions -> Docker Hub -> Render redeploy.
-
-### Architecture Notes
-
-- External user traffic enters through AWS Application Load Balancer.
-- Frontend container serves the SPA and proxies API/upload traffic to backend.
-- Backend persists business data in MongoDB Atlas and caches reads in Upstash Redis.
-- Prometheus scrapes backend metrics from `/metrics`, and Grafana visualizes time-series data.
-- GitHub Actions builds and pushes container images to Docker Hub on each push to `main`.
-- Terraform provisions the VPC, subnets, ALB, EC2 host, and security groups for deployment.
-
-## Key Features
-
-- User registration and login with JWT-based authentication
-- Protected resume CRUD APIs per authenticated user
-- Resume template editing flow with live preview support
-- Upload and replace resume thumbnail and profile image
-- Resume dashboard with progress/completion insights
-- PDF export capabilities in frontend stack
-- Metrics endpoint and monitoring dashboards
-- Docker-first local and cloud deployment workflow
-
-## Tech Stack
-
-### Frontend
-
-- React 19
-- Vite
-- React Router
-- Axios
-- Tailwind CSS
-- Nginx (production static serving and API proxy)
-
-### Backend
-
-- Node.js 20
-- Express 5
-- MongoDB + Mongoose
-- JWT + bcryptjs
-- Multer (image uploads)
-- ioredis (Upstash Redis)
-- prom-client (Prometheus metrics)
-
-### DevOps & Platform
-
-- Docker + Docker Compose
-- GitHub Actions
-- Docker Hub registry
-- Terraform (AWS EC2 + ALB + networking)
-- Prometheus + Grafana observability stack
-
-## Backend Implementation Details
-
-This project has a strong backend focus with production-oriented patterns.
-
-### API Surface
-
-Auth routes:
+Authentication:
 
 - `POST /api/auth/register`
 - `POST /api/auth/login`
 - `GET /api/auth/profile` (protected)
 
-Resume routes (all protected):
+Resume domain (protected + user-scoped):
 
 - `POST /api/resume`
 - `GET /api/resume`
@@ -144,230 +74,193 @@ Resume routes (all protected):
 - `PUT /api/resume/:id/upload-images`
 - `DELETE /api/resume/:id`
 
-Operational routes:
+Operational endpoints:
 
-- `GET /metrics` (Prometheus scrape endpoint)
-- `GET /api/redis-health` (cache connectivity check)
+- `GET /metrics`
+- `GET /api/redis-health`
 
 ### Security and Access Control
 
-- Passwords are hashed with `bcryptjs`
-- JWT token is issued on login/register
-- Protected routes validate `Authorization: Bearer <token>`
-- CORS is environment-aware:
-  - Explicit allowlist from `ALLOWED_ORIGINS`
-  - Dynamic support for Codespaces and Render domains
+- JWT-based auth middleware protects private routes.
+- Passwords are hashed with `bcryptjs`.
+- CORS is controlled with `ALLOWED_ORIGINS` and includes support for `*.onrender.com`.
+- API access is ownership-aware (user can only access their own resumes).
 
-### Data and Caching Strategy
+### Data Model and Persistence
 
-- MongoDB stores users and resume documents
-- Upstash Redis stores cached read payloads and reduces repeated database reads
-- `getOrSetCache` is used for profile and resume reads
-- Cache keys are invalidated on create/update/delete write operations
-- Redis failures gracefully fall back to database fetches
+- MongoDB Atlas stores users and resume documents.
+- Mongoose models support structured nested sections for resume content.
+- Upload references are persisted and old files are cleaned up on replacement/delete.
 
-### Redis Caching Layer (Highlighted)
+### Upload and Asset Handling
 
-- Redis is used in user profile and resume retrieval paths to improve API responsiveness.
-- Cache TTL is controlled at the key level (`300s` default, custom TTL where needed).
-- Write operations invalidate affected keys to avoid stale reads.
-- The backend includes a dedicated health endpoint (`/api/redis-health`) for connectivity verification.
+- Multer handles image uploads (jpeg/jpg/png).
+- `uploads` is served as a static path from backend.
+- Thumbnail and profile images are replaced safely with cleanup.
 
-### File Upload Pipeline
+## Docker Build Strategy
 
-- Multer disk storage writes to `backend/uploads`
-- Allowed mime types: jpeg, jpg, png
-- Existing thumbnail/profile files are cleaned up on replacement
-- Uploaded assets are served via `/uploads`
+### Backend Container
 
-### Observability in Backend
+- Multi-stage Dockerfile on Node 20 Alpine.
+- App runs as a lightweight runtime image.
+- Health check targets `/metrics` for process + API readiness.
 
-- `prom-client` default runtime metrics are enabled
-- HTTP request counter, latency histogram, and in-progress gauge are instrumented
-- Business and error metric definitions are prepared for extension
+### Frontend Container
 
-## DevOps Implementation Details
+- React app is built in a builder stage.
+- Nginx serves static assets in runtime stage.
+- `BACKEND_URL` is injected at startup via `envsubst`.
+- Nginx proxies `/api` and `/uploads` to backend.
 
-This repository goes beyond app code and includes practical DevOps automation.
+### Image Size Reduction with Multi-Stage Builds
 
-### Containerization
+The Dockerfiles use multi-stage builds to significantly reduce final runtime image size.
 
-- Backend and frontend use multi-stage Dockerfiles
-- Frontend image starts Nginx with runtime `BACKEND_URL` substitution
-- Health checks are configured for frontend and backend containers
+| Service | Before | After | Reduction |
+|---------|--------|-------|-----------|
+| Backend | 1.2 GB | 313 MB | 74% |
+| Frontend | 900 MB | 64 MB | 93% |
 
-### Docker Compose Stack
+This improves pull time, deploy speed, and registry storage efficiency.
 
-Root `docker-compose.yml` orchestrates:
+## Docker Compose Stack
 
-- `backend` on port 4000
-- `frontend` on port 80
-- `prometheus` on port 9090
-- `grafana` on port 3000
+The root compose file runs a full local environment:
 
-Also includes:
+- `backend` (port 4000)
+- `frontend` (port 80)
+- `prometheus` (port 9090)
+- `grafana` (port 3000)
 
-- Persistent volumes for Prometheus and Grafana data
-- Shared bridge networking for service communication
+What this gives you:
 
-### CI/CD Pipeline
+- One command local stack bring-up
+- Shared network between services
+- Persistent volumes for monitoring data
+- Health checks for app services
 
-GitHub Actions workflow (`.github/workflows/docker-build-push.yml`):
+## Redis Caching Design
 
-- Triggers on push to `main`
-- Builds backend and frontend images with Buildx
-- Pushes both `latest` and `<short-commit-sha>` tags
-- Uses Docker layer cache to speed up subsequent builds
+Redis is intentionally a first-class layer in this project.
 
-### Infrastructure as Code (AWS)
+- Upstash Redis is used for read-heavy API paths.
+- `getOrSetCache` wraps fetch logic for profile and resume retrieval.
+- Cache invalidation is triggered after create/update/delete operations.
+- If Redis is unavailable, backend gracefully falls back to MongoDB.
+- Dedicated endpoint `/api/redis-health` helps validate runtime cache connectivity.
 
-Terraform stack under `infra/ec2-compose-alb` provisions:
+## Terraform Infrastructure (AWS)
+
+Infrastructure code is under `infra/ec2-compose-alb`.
+
+Provisioned resources:
 
 - VPC and public subnets
-- Internet Gateway and public route table
+- Internet gateway + route table
+- ALB + target group + listeners (HTTP/HTTPS)
+- EC2 instance running Docker Compose
 - Security groups for ALB and EC2
-- Application Load Balancer with HTTP/HTTPS listener logic
-- EC2 host running Docker Compose
-- User data bootstrap script that installs Docker and starts containers
+- User data bootstrap for Docker install and service startup
 
 Deployment flow:
 
-1. CI pushes images to Docker Hub
-2. EC2 host pulls latest images via Docker Compose
-3. ALB routes public traffic to frontend on EC2
-4. Frontend proxies API and upload paths to backend container
+1. Push code to main
+2. GitHub Actions builds and pushes images to Docker Hub
+3. Terraform provisions/updates AWS resources
+4. EC2 user data runs Docker Compose pull/up
+5. ALB routes public traffic to frontend container
 
-## Repository Structure
+## Deployment Proof (Screenshots)
 
-```text
-.
-├── backend/                  # Express API, models, controllers, middleware
-├── frontend/                 # React app (Vite) and Nginx config
-├── grafana/                  # Dashboards and provisioning
-├── prometheus/               # Prometheus scrape config
-├── infra/
-│   └── ec2-compose-alb/      # Terraform for AWS demo deployment
-├── .github/workflows/        # CI pipeline (Docker build/push)
-└── docker-compose.yml        # Local full-stack + monitoring orchestration
-```
+### AWS Infrastructure Proof
 
-## Local Development
+EC2 instance running status in AWS console:
+
+![AWS EC2 instance running](pics/pro9.png)
+
+### Application Reachability Proof
+
+Application reachable through ALB URL:
+
+![Application landing page via ALB](pics/pro8.png)
+
+### Security Note on Screenshots
+
+Some additional screenshots in the `pics` folder include sensitive terminal/env information. Those are intentionally not embedded in this README for security hygiene in public interview sharing.
+
+## Monitoring and Observability
+
+- Backend is instrumented using `prom-client`.
+- Prometheus scrapes metrics from `/metrics`.
+- Grafana dashboards are pre-provisioned from repository config.
+- Container health checks are enabled in compose and Dockerfiles.
+
+## Local Setup
 
 ### Prerequisites
 
 - Node.js 20+
 - npm
-- Docker + Docker Compose (recommended)
-- MongoDB Atlas connection string
+- Docker + Docker Compose
+- MongoDB Atlas URI
 - Upstash Redis URL
 
-### Environment Variables
-
-Create `backend/.env`:
+### Backend Environment (`backend/.env`)
 
 ```env
 MONGO_URI=mongodb+srv://<user>:<password>@<cluster>/<db>
 REDIS_URL=rediss://default:<password>@<host>:<port>
-JWT_SECRET=replace_with_secure_secret
+JWT_SECRET=replace_with_strong_secret
 ALLOWED_ORIGINS=http://localhost:5173,http://localhost:5174
 NODE_ENV=development
 PORT=4000
 ```
 
-### Run Without Docker
-
-Backend:
+### Run Locally Without Docker
 
 ```bash
-cd backend
-npm install
-npm run dev
+cd backend && npm install && npm run dev
+cd frontend && npm install && npm run dev
 ```
 
-Frontend:
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-### Run With Docker Compose (App + Monitoring)
+### Run Full Stack With Docker Compose
 
 ```bash
 docker-compose up -d --build
 ```
 
-Service URLs:
+Service endpoints:
 
 - Frontend: `http://localhost`
 - Backend: `http://localhost:4000`
 - Prometheus: `http://localhost:9090`
-- Grafana: `http://localhost:3000` (`admin/admin`)
+- Grafana: `http://localhost:3000`
 
-Stop stack:
+Stop services:
 
 ```bash
 docker-compose down
 ```
 
-## Monitoring
+## Render Deployment (Live Demo)
 
-- Backend exposes metrics at `GET /metrics`
-- Prometheus scrapes backend metrics every 10 seconds
-- Grafana ships with pre-provisioned dashboard configuration
+For interviews and live sharing, Render is used as the running demo environment to control cost while keeping architecture credibility.
 
-Useful checks:
+Render-focused architecture:
 
-```bash
-curl http://localhost:4000/metrics
-docker-compose ps
-docker-compose logs -f backend
-```
+![ResumeBuilder Render Architecture](docs/architecture/resumebuilder-render-architecture.svg)
 
-## AWS Deployment (Terraform)
+Why this setup is practical:
 
-The repository includes a deployment option designed for demo/showcase usage.
-
-```bash
-cd infra/ec2-compose-alb
-cp terraform.tfvars.example terraform.tfvars
-# Fill in real values for key_name, mongo_uri, redis_url, jwt_secret, etc.
-
-terraform init
-terraform plan
-terraform apply
-```
-
-Outputs include:
-
-- ALB DNS name
-- App URL
-- EC2 public IP
-
-Destroy infrastructure:
-
-```bash
-terraform destroy
-```
-
-## What You Built (Backend + DevOps Highlight)
-
-You implemented a strong production-style foundation:
-
-- Designed a protected API platform (auth + resource ownership)
-- Added Redis-assisted read performance and cache invalidation discipline
-- Integrated image upload lifecycle handling with cleanup
-- Added Prometheus-compatible instrumentation and metrics endpoint
-- Containerized both tiers with runtime-configurable reverse proxy behavior
-- Automated build and image publishing using GitHub Actions
-- Codified AWS networking, ALB routing, and compute bootstrap with Terraform
-
-This is the exact type of implementation depth expected in backend and DevOps-focused full-stack projects.
+- AWS Terraform stack proves infrastructure depth.
+- Render keeps demo hosting simple and affordable.
+- Backend already supports Render-origin traffic in CORS.
+- Data tier still uses managed MongoDB Atlas + Upstash Redis.
 
 ## License
 
-Licensed under the MIT License. See `LICENSE` for details.
+Licensed under the MIT License. See `LICENSE`.
 
 ## Author
 
