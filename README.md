@@ -1,618 +1,310 @@
-# 📝 Production Grade Resume Builder
-## Cloud-Native Application Deployed on Microsoft Azure
+# ResumeBuilder
 
----
-
-> **🏆 Microsoft Elevate Internship Project**  
-> **Author:** Santosh Reddy  
-> **Institution:** [Your College Name]  
-> **Technology:** MERN Stack + Docker + Azure Cloud  
-> **Submission Date:** January 2026
-
----
-
-## 📑 Table of Contents
-
-1. [Problem Statement](#-problem-statement)
-2. [Proposed Solution](#-proposed-solution)
-3. [System Development Approach](#-system-development-approach)
-4. [Architecture & Design](#-architecture--design)
-5. [Technology Stack](#-technology-stack)
-6. [Implementation Details](#-implementation-details)
-7. [Deployment on Microsoft Azure](#-deployment-on-microsoft-azure)
-8. [Results & Performance](#-results--performance)
-9. [Conclusion](#-conclusion)
-10. [Future Scope](#-future-scope)
-11. [References](#-references)
-
----
-
-## 🎯 Problem Statement
-
-### Background
-In today's competitive job market, creating professional, well-formatted resumes is crucial for career success. However, many individuals face several challenges:
-
-1. **Lack of Technical Skills**: Not everyone has design or word processing expertise to create visually appealing resumes
-2. **Time-Consuming Process**: Manual formatting and layout adjustments take significant time
-3. **Inconsistent Quality**: Different tools produce varying quality outputs with formatting issues
-4. **Limited Customization**: Existing solutions offer limited template choices and customization options
-5. **No Cloud Storage**: Users cannot access their resumes across devices without manual file transfers
-6. **Scalability Issues**: Traditional desktop applications don't scale for enterprise use
-
-### Objectives
-The project aims to:
-- ✅ Provide an intuitive, user-friendly platform for resume creation
-- ✅ Offer multiple professional templates with real-time preview
-- ✅ Enable cloud-based storage for cross-device accessibility
-- ✅ Implement secure user authentication and data privacy
-- ✅ Deploy a production-grade, scalable application using Azure cloud services
-- ✅ Demonstrate modern DevOps practices including containerization and CI/CD
-
----
+Production-grade resume builder built with a modern MERN architecture, containerized delivery, infrastructure automation, and observability-first operations.
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Build](https://img.shields.io/badge/build-passing-brightgreen.svg)
+![Backend](https://img.shields.io/badge/backend-Node.js%20%2B%20Express-339933)
+![Database](https://img.shields.io/badge/database-MongoDB-47A248)
+![DevOps](https://img.shields.io/badge/devops-Docker%20%7C%20Terraform%20%7C%20GitHub%20Actions-2496ED)
+![Monitoring](https://img.shields.io/badge/monitoring-Prometheus%20%2B%20Grafana-orange)
 
-### Frontend Technologies
-- **React 18** - Component-based UI framework with hooks
-- **Vite** - Next-generation build tool for fast HMR and optimized builds
-- **React Router** - Client-side routing for SPA navigation
-- **Axios** - Promise-based HTTP client for API calls
-- **Context API** - Global state management
-- **CSS3** - Responsive styling and animations
+## Table of Contents
 
-### Backend Technologies
-- **Node.js 20** - JavaScript runtime on server
-- **Express.js** - Minimal web framework for APIs
-- **MongoDB** - NoSQL document database
-- **Mongoose** - Elegant MongoDB ODM
-- **JWT** - JSON Web Tokens for stateless authentication
-- **bcrypt** - Password hashing library
-- **Multer** - Middleware for file uploads
-- **prom-client** - Prometheus metrics client
+1. Project Summary
+2. Architecture Diagram
+3. Key Features
+4. Tech Stack
+5. Backend Implementation Details
+6. DevOps Implementation Details
+7. Repository Structure
+8. Local Development
+9. Monitoring
+10. AWS Deployment (Terraform)
+11. What You Built (Backend + DevOps Highlight)
+12. License
+13. Author
 
-### DevOps & Cloud
-- **Docker** - Containerization platform
-- **Docker Compose** - Multi-container orchestration
-- **Azure Container Apps** - Serverless container hosting
-- **Azure Container Registry** - Private Docker registry
-- **GitHub Actions** - CI/CD automation
-- **Prometheus** - Metrics collection and monitoring
-- **Grafana** - Metrics visualization and dashboards
-- **Nginx** - Reverse proxy and web server
+## Project Summary
 
----
+ResumeBuilder helps users create, edit, customize, and export professional resumes through a responsive web application.
 
-## 💻 Implementation Details
+What this project demonstrates clearly:
 
-### Backend Implementation
+- End-to-end full-stack engineering with React + Node.js + MongoDB
+- Secure backend design with JWT auth, password hashing, and protected APIs
+- Redis-based read caching and cache invalidation patterns
+- Dockerized app delivery with Nginx reverse proxy integration
+- Monitoring setup with Prometheus metrics and Grafana dashboards
+- CI pipeline that builds and pushes versioned images to Docker Hub
+- Infrastructure as Code using Terraform for AWS EC2 + ALB deployment
 
-#### 1. **Authentication System**
-```javascript
-// JWT token generation
-const token = jwt.sign(
-  { userId: user._id, email: user.email },
-  process.env.JWT_SECRET,
-  { expiresIn: '24h' }
-);
+## Architecture Diagram
 
-// Password hashing with bcrypt
-const hashedPassword = await bcrypt.hash(password, 10);
+The following diagram represents the complete runtime and delivery architecture, including user traffic flow, cloud infrastructure, CI/CD pipeline, data services, and observability components.
+
+```mermaid
+flowchart LR
+  U[End User\nBrowser / Mobile]
+  D[Developer]
+
+  subgraph CICD[CI/CD Pipeline]
+    REPO[GitHub Repository\nmain branch]
+    GA[GitHub Actions\nBuild and Push Docker Images]
+    DH[(Docker Hub\nFrontend + Backend Images)]
+    REPO -->|push to main| GA
+    GA -->|docker buildx + push| DH
+  end
+
+  subgraph AWS[AWS Cloud]
+    ALB[Application Load Balancer\n:80 / :443]
+
+    subgraph VPC[VPC 10.20.0.0/16]
+      subgraph SN1[Public Subnet A]
+        EC2[EC2 Instance\nAmazon Linux 2023]
+
+        subgraph COMPOSE[Docker Compose on EC2]
+          FE[Frontend Container\nReact + Nginx]
+          BE[Backend Container\nNode.js + Express]
+          VOL[(Docker Volume\n/uploads)]
+        end
+      end
+
+      subgraph SN2[Public Subnet B]
+        AZ2[ALB Availability Zone]
+      end
+    end
+
+    ALB -->|forward target group| FE
+    FE -->|proxy /api/* and /uploads/*| BE
+    BE -->|read/write image files| VOL
+  end
+
+  MDB[(MongoDB Atlas\nUsers + Resumes)]
+  RDS[(Upstash Redis\nCache Layer)]
+
+  subgraph MON[Observability Stack\nDocker Compose / Codespaces]
+    PM[Prometheus\nScrape /metrics]
+    GF[Grafana\nDashboards]
+    PM -->|datasource| GF
+  end
+
+  U -->|HTTP/HTTPS| ALB
+  BE -->|Mongoose CRUD| MDB
+  BE -->|getOrSetCache / invalidate| RDS
+  BE -->|Expose /metrics| PM
+
+  FE -->|/api/auth + /api/resume| BE
+  BE -->|JWT issue + verify| FE
+
+  D -->|commit code| REPO
+  DH -->|docker compose pull| EC2
+  D -->|terraform apply| AWS
 ```
 
-#### 2. **API Middleware Stack**
-```javascript
-app.use(cors({ origin: allowedOrigins }));
-app.use(express.json());
-app.use(requestMetricsMiddleware);  // Prometheus metrics
-app.use('/api/user', userRouter);
-app.use('/api/resume', authMiddleware, resumeRouter);  // Protected routes
-```
+### Architecture Notes
 
-#### 3. **MongoDB Schema Validation**
-```javascript
-const userSchema = new mongoose.Schema({
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    lowercase: true,
-    trim: true
-  },
-  password: {
-    type: String,
-    required: true,
-    minlength: 6
-  }
-}, { timestamps: true });
+- External user traffic enters through AWS Application Load Balancer.
+- Frontend container serves the SPA and proxies API/upload traffic to backend.
+- Backend persists business data in MongoDB Atlas and caches reads in Upstash Redis.
+- Prometheus scrapes backend metrics from `/metrics`, and Grafana visualizes time-series data.
+- GitHub Actions builds and pushes container images to Docker Hub on each push to `main`.
+- Terraform provisions the VPC, subnets, ALB, EC2 host, and security groups for deployment.
 
-// Index for faster queries
-userSchema.index({ email: 1 });
-```
+## Key Features
 
-#### 4. **Prometheus Metrics Instrumentation**
-```javascript
-// Custom metrics
-const httpRequestsTotal = new Counter({
-  name: 'http_requests_total',
-  help: 'Total HTTP requests',
-  labelNames: ['method', 'route', 'status']
-});
+- User registration and login with JWT-based authentication
+- Protected resume CRUD APIs per authenticated user
+- Resume template editing flow with live preview support
+- Upload and replace resume thumbnail and profile image
+- Resume dashboard with progress/completion insights
+- PDF export capabilities in frontend stack
+- Metrics endpoint and monitoring dashboards
+- Docker-first local and cloud deployment workflow
 
-const httpRequestDuration = new Histogram({
-  name: 'http_request_duration_seconds',
-  help: 'HTTP request latency',
-  buckets: [0.1, 0.5, 1, 2, 5]
-});
-```
-
-### Frontend Implementation
-
-#### 1. **State Management with Context**
-```javascript
-const UserContext = createContext();
-
-export const UserProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('token'));
-  
-  return (
-    <UserContext.Provider value={{ user, token, setUser, setToken }}>
-      {children}
-    </UserContext.Provider>
-  );
-};
-```
-
-#### 2. **API Integration**
-```javascript
-// Axios instance with auth headers
-const axiosInstance = axios.create({
-  baseURL: BASE_URL,
-  headers: {
-    'Authorization': `Bearer ${localStorage.getItem('token')}`
-  }
-});
-```
-
-### Docker Optimization
-
-#### Multi-Stage Build (Backend)
-```dockerfile
-# Stage 1: Builder
-FROM node:20-alpine AS builder
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --only=production
-
-# Stage 2: Runtime
-FROM node:20-alpine
-WORKDIR /app
-COPY --from=builder /app/node_modules ./node_modules
-COPY . .
-EXPOSE 4000
-CMD ["node", "server.js"]
-```
-
-**Result**: Image size reduced from 1.2GB → 313MB (74% reduction)
-
-#### Multi-Stage Build (Frontend)
-```dockerfile
-# Stage 1: Build
-FROM node:20-alpine AS builder
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-COPY . .
-RUN npm run build
-
-# Stage 2: Nginx
-FROM nginx:alpine
-COPY --from=builder /app/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/nginx.conf
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
-```
-
-**Result**: Image size reduced from 900MB → 64MB (93% reduction)
-
----
-
-## ☁️ Deployment on Microsoft Azure
-
-### Solution Overview
-A **full-stack web application** that allows users to create, customize, and manage professional resumes through an intuitive interface. The solution leverages:
-
-- **MERN Stack** for robust full-stack development (MongoDB, Express, React, Node.js)
-- **Docker Containerization** for consistent deployment across environments
-- **Microsoft Azure Cloud** for scalable, serverless hosting
-- **CI/CD Pipeline** for automated testing and deployment
-- **Production Monitoring** using Prometheus and Grafana for observability
-
-### Key Features
-1. **User Authentication**: Secure JWT-based authentication with bcrypt password hashing
-2. **Multiple Templates**: 3+ professionally designed resume templates
-3. **Real-time Preview**: See changes instantly as you type
-4. **Image Upload**: Add profile pictures with Multer file handling
-5. **Cloud Storage**: MongoDB Atlas for reliable, distributed data storage
-6. **PDF Export**: Download resumes in PDF format
-7. **Theme Customization**: Color and style customization options
-8. **Production Monitoring**: Real-time metrics and dashboards
-9. **Auto-scaling**: Azure Container Apps automatically scale based on traffic
-10. **Zero-downtime Deployment**: Blue-green deployment strategy
-
----
-
-## 🛠️ System Development Approach
-
-### Development Methodology: Agile
-
-The project followed an **Agile development methodology** with iterative sprints:
-
-#### **Phase 1: Planning & Design (Week 1)**
-- Requirement analysis and feature prioritization
-- Database schema design (User and Resume models)
-- API endpoint design (RESTful architecture)
-- UI/UX wireframing for resume templates
-
-#### **Phase 2: Backend Development (Week 2)**
-- Node.js + Express API implementation
-- MongoDB integration with Mongoose ODM
-- JWT authentication and authorization
-- File upload handling with Multer
-- Input validation and error handling
-
-#### **Phase 3: Frontend Development (Week 3)**
-- React component architecture
-- State management with Context API
-- Integration with backend API
-- Responsive design implementation
-- Template rendering engine
-
-#### **Phase 4: Containerization (Week 4)**
-- Multi-stage Dockerfile creation for backend (74% size reduction)
-- Multi-stage Dockerfile creation for frontend (93% size reduction)
-- Docker Compose orchestration for local development
-- Image optimization with Alpine Linux base
-
-#### **Phase 5: Monitoring & Observability (Week 5)**
-- Prometheus metrics instrumentation (15+ custom metrics)
-- Grafana dashboard creation
-- Health check endpoints
-- Error tracking and logging
-
-#### **Phase 6: CI/CD Pipeline (Week 6)**
-- GitHub Actions workflow setup
-- Automated Docker image builds
-- Docker Hub integration
-- Azure Container Registry (ACR) deployment
-
-#### **Phase 7: Azure Deployment (Week 7)**
-- Azure Container Apps configuration
-- Environment variable management
-- Nginx reverse proxy setup
-- CORS and security configuration
-- Load testing and optimization
-
-### Development Tools
-- **Version Control**: Git + GitHub
-- **Code Editor**: VS Code with GitHub Copilot
-- **API Testing**: Postman
-- **Containerization**: Docker + Docker Compose
-- **CI/CD**: GitHub Actions
-- **Monitoring**: Prometheus + Grafana
-- **Cloud Platform**: Microsoft Azure
-
----
-
-## 🏗️ Architecture & Design
-
-### System Architecture
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                         CLIENT LAYER                            │
-│  ┌──────────────────────────────────────────────────────────┐  │
-│  │  React Frontend (SPA)                                     │  │
-│  │  - Components, Routes, Context API                        │  │
-│  │  - Vite Build Tool                                        │  │
-│  └──────────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────────┘
-                              ↕ HTTPS
-┌─────────────────────────────────────────────────────────────────┐
-│                    PRESENTATION LAYER                           │
-│  ┌──────────────────────────────────────────────────────────┐  │
-│  │  Nginx Reverse Proxy                                      │  │
-│  │  - Static file serving, Gzip compression                  │  │
-│  │  - API gateway (/api → backend:4000)                      │  │
-│  └──────────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────────┘
-                              ↕ HTTP
-┌─────────────────────────────────────────────────────────────────┐
-│                    APPLICATION LAYER                            │
-│  ┌──────────────────────────────────────────────────────────┐  │
-│  │  Node.js + Express Backend API                            │  │
-│  │  - RESTful endpoints                                      │  │
-│  │  - JWT authentication middleware                          │  │
-│  │  - Multer file upload                                     │  │
-│  │  - Prometheus metrics middleware                          │  │
-│  └──────────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────────┘
-                              ↕ MongoDB Protocol
-┌─────────────────────────────────────────────────────────────────┐
-│                       DATA LAYER                                │
-│  ┌──────────────────────────────────────────────────────────┐  │
-│  │  MongoDB Atlas (Cloud Database)                           │  │
-│  │  - User collection (authentication)                       │  │
-│  │  - Resume collection (resume data)                        │  │
-│  │  - Indexed queries, replication                           │  │
-│  └──────────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────────┘
-                              ↕ Metrics Scraping
-┌─────────────────────────────────────────────────────────────────┐
-│                   MONITORING LAYER                              │
-│  ┌────────────────────┐    ┌────────────────────────────────┐  │
-│  │  Prometheus         │←──→│  Grafana Dashboards            │  │
-│  │  - Metrics storage  │    │  - Visualization               │  │
-│  │  - Time-series DB   │    │  - Alerting                    │  │
-│  └────────────────────┘    └────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────────┘
-```
-
-### Deployment Architecture on Azure
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                      GitHub Repository                          │
-│  (Source Code + Dockerfiles + GitHub Actions Workflow)         │
-└─────────────────────────────────────────────────────────────────┘
-                              ↓
-                    GitHub Actions CI/CD
-                              ↓
-┌─────────────────────────────────────────────────────────────────┐
-│              Azure Container Registry (ACR)                     │
-│  - resumebuilderacr.azurecr.io/resumebuilder-backend:latest    │
-│  - resumebuilderacr.azurecr.io/resumebuilder-frontend:latest   │
-└─────────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────────┐
-│           Azure Container Apps Environment                      │
-│                                                                 │
-│  ┌─────────────────────┐    ┌──────────────────────────────┐  │
-│  │  Backend Container   │    │  Frontend Container          │  │
-│  │  - 0.5 CPU, 1Gi RAM  │    │  - 0.25 CPU, 0.5Gi RAM       │  │
-│  │  - Auto-scale: 1-3   │    │  - Auto-scale: 1-2           │  │
-│  │  - Port: 4000        │    │  - Port: 80                  │  │
-│  └─────────────────────┘    └──────────────────────────────┘  │
-│                                                                 │
-│  ┌──────────────────────────────────────────────────────────┐  │
-│  │  Azure Virtual Network                                    │  │
-│  │  - Secure service-to-service communication                │  │
-│  └──────────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────────┘
-                              ↕
-                      Public Internet (HTTPS)
-                              ↕
-                          End Users
-```
-
-### Database Schema Design
-
-#### **User Collection**
-```javascript
-{
-  _id: ObjectId,
-  name: String (required),
-  email: String (required, unique, indexed),
-  password: String (bcrypt hashed),
-  createdAt: Date (auto),
-  updatedAt: Date (auto)
-}
-```
-
-#### **Resume Collection**
-```javascript
-{
-  _id: ObjectId,
-  userId: ObjectId (reference to User, indexed),
-  templateId: Number (1, 2, or 3),
-  personalInfo: {
-    name: String,
-    email: String,
-    phone: String,
-    address: String,
-    profileImage: String (file path)
-  },
-  sections: {
-    education: Array,
-    experience: Array,
-    skills: Array,
-    projects: Array,
-    certifications: Array
-  },
-  theme: {
-    primaryColor: String,
-    secondaryColor: String
-  },
-  createdAt: Date,
-  updatedAt: Date
-}
-```
-
-### API Endpoints Design
-
-#### **Authentication Endpoints**
-```
-POST   /api/user/signup      - Register new user
-POST   /api/user/login       - Authenticate user (returns JWT)
-GET    /api/user/profile     - Get user profile (requires auth)
-```
-
-#### **Resume Endpoints**
-```
-POST   /api/resume           - Create new resume (requires auth)
-GET    /api/resume           - Get all user resumes (requires auth)
-GET    /api/resume/:id       - Get single resume (requires auth)
-PUT    /api/resume/:id       - Update resume (requires auth)
-DELETE /api/resume/:id       - Delete resume (requires auth)
-```
-
-#### **File Upload Endpoints**
-```
-POST   /api/upload           - Upload profile image (requires auth)
-```
-
-#### **Monitoring Endpoints**
-```
-GET    /metrics              - Prometheus metrics (public)
-```
-
----
-
-## 🚀 Technology Stack
-
-![React](https://img.shields.io/badge/React-18.x-61DAFB?style=for-the-badge&logo=react&logoColor=black)
-![Node.js](https://img.shields.io/badge/Node.js-20-339933?style=for-the-badge&logo=node.js&logoColor=white)
-![Express](https://img.shields.io/badge/Express-4.x-000000?style=for-the-badge&logo=express&logoColor=white)
-![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)
-![Prometheus](https://img.shields.io/badge/Prometheus-Metrics-E6522C?style=for-the-badge&logo=prometheus&logoColor=white)
-![Grafana](https://img.shields.io/badge/Grafana-Dashboards-F46800?style=for-the-badge&logo=grafana&logoColor=white)
-![Nginx](https://img.shields.io/badge/Nginx-Proxy-009639?style=for-the-badge&logo=nginx&logoColor=white)
-![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-CI%2FCD-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-Build-646CFF?style=for-the-badge&logo=vite&logoColor=white)
-![JWT](https://img.shields.io/badge/JWT-Auth-000000?style=for-the-badge&logo=json-web-tokens&logoColor=white)
-![Azure](https://img.shields.io/badge/Azure-Container_Apps-0078D4?style=for-the-badge&logo=microsoft-azure&logoColor=white)
-
-## 💡 Skills & Technologies Demonstrated
-
-This project showcases expertise in modern full-stack development and DevOps practices:
-
-### **Frontend Development**
-- ⚛️ **React 18** - Component-based UI architecture with hooks and context
-- ⚡ **Vite** - Modern build tool for fast development and optimized production builds
-- 🎨 **Responsive Design** - Mobile-first approach with custom CSS
-- 🔄 **State Management** - React Context API for global state
-- 🌐 **SPA Routing** - React Router for seamless navigation
-
-### **Backend Development**
-- 🟢 **Node.js & Express** - RESTful API design and implementation
-- 🗄️ **MongoDB & Mongoose** - NoSQL database design and ODM patterns
-- 🔐 **Authentication & Security** - JWT tokens, bcrypt password hashing, CORS configuration
-- 📁 **File Handling** - Multer for image uploads and storage
-- ✅ **Input Validation** - Schema validation and error handling
-
-### **DevOps & Infrastructure**
-- 🐳 **Docker** - Multi-stage containerization for optimized images
-- 🔧 **Docker Compose** - Multi-container orchestration with networking and volumes
-- 🔄 **CI/CD** - GitHub Actions automated build and deployment pipeline
-- 📦 **Container Registry** - Docker Hub integration for image distribution
-- 🌐 **Nginx** - Reverse proxy configuration, static file serving, gzip compression
-
-### **Monitoring & Observability**
-- 📊 **Prometheus** - Metrics collection and time-series monitoring
-- 📈 **Grafana** - Dashboard creation and data visualization
-- 🔍 **Custom Metrics** - Application-level instrumentation (HTTP, business, resource metrics)
-- 🏥 **Health Checks** - Container health monitoring and auto-recovery
-
-### **Microsoft Azure Cloud Services**
-- ☁️ **Azure Container Apps** - Serverless container orchestration and auto-scaling
-- 📦 **Azure Container Registry (ACR)** - Private container image management
-- 🔒 **Azure Active Directory** - Identity and access management integration
-- 🌐 **Azure Virtual Network** - Secure networking and service communication
-- 📊 **Azure Monitor** - Application insights and performance monitoring
-- 🗄️ **MongoDB Atlas** - Cloud database (integrated with Azure)
-- 🔑 **Azure Key Vault** - Secure secret management (environment variables)
-- 🌍 **Alternative Platforms** - Render, Railway, Vercel for comparison
-
-### **Software Engineering Practices**
-- 📝 **Git & Version Control** - Conventional commits, branching strategies
-- 🏗️ **Code Organization** - MVC architecture, modular design
-- 🔒 **Security Best Practices** - Secret management, CORS, input sanitization
-- 📚 **Documentation** - Comprehensive README, API documentation, deployment guides
-- ⚙️ **Configuration Management** - Environment-based configs, .dockerignore, .gitignore
-
-## 🌟 Features
-
-- **Multiple Resume Templates** - Choose from professionally designed templates
-- **Real-time Preview** - See changes as you type
-- **User Authentication** - Secure JWT-based authentication
-- **Image Upload** - Add profile pictures to your resume
-- **Template Customization** - Customize colors and themes
-- **PDF Export** - Download your resume as PDF
-- **Cloud Storage** - MongoDB Atlas for reliable data persistence
-- **Production Monitoring** - Prometheus metrics and Grafana dashboards
-- **Containerized Deployment** - Docker and Docker Compose support
-- **Automated CI/CD** - GitHub Actions pipeline for continuous delivery
-
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Frontend
-- **React 18** - UI framework
-- **Vite** - Build tool and dev server
-- **Axios** - HTTP client
-- **React Router** - Client-side routing
-- **Nginx** - Production web server
+
+- React 19
+- Vite
+- React Router
+- Axios
+- Tailwind CSS
+- Nginx (production static serving and API proxy)
 
 ### Backend
-- **Node.js 20** - Runtime environment
-- **Express** - Web framework
-- **MongoDB** - Database
-- **Mongoose** - ODM
-- **JWT** - Authentication
-- **Multer** - File upload handling
-- **prom-client** - Prometheus metrics
 
-### DevOps & Monitoring
-- **Docker** - Containerization
-- **Docker Compose** - Multi-container orchestration
-- **Prometheus** - Metrics collection
-- **Grafana** - Metrics visualization
-- **GitHub Actions** - CI/CD pipeline
-- **Nginx** - Reverse proxy and static file serving
+- Node.js 20
+- Express 5
+- MongoDB + Mongoose
+- JWT + bcryptjs
+- Multer (image uploads)
+- ioredis (Upstash Redis)
+- prom-client (Prometheus metrics)
 
-## 📋 Prerequisites
+### DevOps & Platform
 
-- **Node.js** >= 20.0.0
-- **Docker** and **Docker Compose** (for containerized deployment)
-- **MongoDB Atlas** account (or local MongoDB instance)
-- **Git** for version control
+- Docker + Docker Compose
+- GitHub Actions
+- Docker Hub registry
+- Terraform (AWS EC2 + ALB + networking)
+- Prometheus + Grafana observability stack
 
-## 🚀 Getting Started
+## Backend Implementation Details
 
-### 1. Clone the Repository
+This project has a strong backend focus with production-oriented patterns.
 
-```bash
-git clone https://github.com/santoshreddy-1362004/resumebuilder.git
-cd resumebuilder
+### API Surface
+
+Auth routes:
+
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `GET /api/auth/profile` (protected)
+
+Resume routes (all protected):
+
+- `POST /api/resume`
+- `GET /api/resume`
+- `GET /api/resume/:id`
+- `PUT /api/resume/:id`
+- `PUT /api/resume/:id/upload-images`
+- `DELETE /api/resume/:id`
+
+Operational routes:
+
+- `GET /metrics` (Prometheus scrape endpoint)
+- `GET /api/redis-health` (cache connectivity check)
+
+### Security and Access Control
+
+- Passwords are hashed with `bcryptjs`
+- JWT token is issued on login/register
+- Protected routes validate `Authorization: Bearer <token>`
+- CORS is environment-aware:
+  - Explicit allowlist from `ALLOWED_ORIGINS`
+  - Dynamic support for Codespaces and Render domains
+
+### Data and Caching Strategy
+
+- MongoDB stores users and resume documents
+- Upstash Redis stores cached read payloads
+- `getOrSetCache` is used for profile and resume reads
+- Cache keys are invalidated on create/update/delete write operations
+- Redis failures gracefully fall back to database fetches
+
+### File Upload Pipeline
+
+- Multer disk storage writes to `backend/uploads`
+- Allowed mime types: jpeg, jpg, png
+- Existing thumbnail/profile files are cleaned up on replacement
+- Uploaded assets are served via `/uploads`
+
+### Observability in Backend
+
+- `prom-client` default runtime metrics are enabled
+- HTTP request counter, latency histogram, and in-progress gauge are instrumented
+- Business and error metric definitions are prepared for extension
+
+## DevOps Implementation Details
+
+This repository goes beyond app code and includes practical DevOps automation.
+
+### Containerization
+
+- Backend and frontend use multi-stage Dockerfiles
+- Frontend image starts Nginx with runtime `BACKEND_URL` substitution
+- Health checks are configured for frontend and backend containers
+
+### Docker Compose Stack
+
+Root `docker-compose.yml` orchestrates:
+
+- `backend` on port 4000
+- `frontend` on port 80
+- `prometheus` on port 9090
+- `grafana` on port 3000
+
+Also includes:
+
+- Persistent volumes for Prometheus and Grafana data
+- Shared bridge networking for service communication
+
+### CI/CD Pipeline
+
+GitHub Actions workflow (`.github/workflows/docker-build-push.yml`):
+
+- Triggers on push to `main`
+- Builds backend and frontend images with Buildx
+- Pushes both `latest` and `<short-commit-sha>` tags
+- Uses Docker layer cache to speed up subsequent builds
+
+### Infrastructure as Code (AWS)
+
+Terraform stack under `infra/ec2-compose-alb` provisions:
+
+- VPC and public subnets
+- Internet Gateway and public route table
+- Security groups for ALB and EC2
+- Application Load Balancer with HTTP/HTTPS listener logic
+- EC2 host running Docker Compose
+- User data bootstrap script that installs Docker and starts containers
+
+Deployment flow:
+
+1. CI pushes images to Docker Hub
+2. EC2 host pulls latest images via Docker Compose
+3. ALB routes public traffic to frontend on EC2
+4. Frontend proxies API and upload paths to backend container
+
+## Repository Structure
+
+```text
+.
+├── backend/                  # Express API, models, controllers, middleware
+├── frontend/                 # React app (Vite) and Nginx config
+├── grafana/                  # Dashboards and provisioning
+├── prometheus/               # Prometheus scrape config
+├── infra/
+│   └── ec2-compose-alb/      # Terraform for AWS demo deployment
+├── .github/workflows/        # CI pipeline (Docker build/push)
+└── docker-compose.yml        # Local full-stack + monitoring orchestration
 ```
 
-### 2. Environment Variables
+## Local Development
 
-Create `.env` file in the project root:
+### Prerequisites
+
+- Node.js 20+
+- npm
+- Docker + Docker Compose (recommended)
+- MongoDB Atlas connection string
+- Upstash Redis URL
+
+### Environment Variables
+
+Create `backend/.env`:
 
 ```env
-MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/resumebuilder
-JWT_SECRET=your_secure_jwt_secret
+MONGO_URI=mongodb+srv://<user>:<password>@<cluster>/<db>
+REDIS_URL=rediss://default:<password>@<host>:<port>
+JWT_SECRET=replace_with_secure_secret
+ALLOWED_ORIGINS=http://localhost:5173,http://localhost:5174
 NODE_ENV=development
 PORT=4000
 ```
 
-**Note:** Never commit the `.env` file to version control. It's already included in `.gitignore`.
+### Run Without Docker
 
-### 3. Local Development (Without Docker)
-
-#### Backend Setup
+Backend:
 
 ```bash
 cd backend
 npm install
-npm start
+npm run dev
 ```
 
-Backend runs on `http://localhost:4000`
-
-#### Frontend Setup
+Frontend:
 
 ```bash
 cd frontend
@@ -620,650 +312,85 @@ npm install
 npm run dev
 ```
 
-Frontend runs on `http://localhost:5173`
-
-### 4. Docker Development (Recommended)
-
-Start all services (backend, frontend, Prometheus, Grafana):
-
-```bash
-docker-compose up -d
-```
-
-**Services:**
-- **Frontend:** http://localhost:80
-- **Backend API:** http://localhost:4000
-- **Prometheus:** http://localhost:9090
-- **Grafana:** http://localhost:3000 (admin/admin)
-
-Stop all services:
-
-```bash
-docker-compose down
-```
-
-Rebuild after code changes:
+### Run With Docker Compose (App + Monitoring)
 
 ```bash
 docker-compose up -d --build
 ```
 
-## 📊 Monitoring
+Service URLs:
 
-### Prometheus Metrics
+- Frontend: `http://localhost`
+- Backend: `http://localhost:4000`
+- Prometheus: `http://localhost:9090`
+- Grafana: `http://localhost:3000` (`admin/admin`)
 
-Access metrics at `http://localhost:4000/metrics`
-
-**Available Metrics:**
-- HTTP request rate and latency
-- Active requests in progress
-- CPU and memory usage
-- MongoDB connection status
-- Business metrics (users, resumes)
-
-### Grafana Dashboards
-
-1. Access Grafana at `http://localhost:3000`
-2. Login with `admin/admin`
-3. Pre-configured dashboard: **Resume Builder Overview**
-
-**Dashboard Panels:**
-- HTTP Request Rate
-- Request Duration (p50, p95, p99)
-- Resumes Created
-- Active Resumes
-- Total Users
-- User Logins
-- CPU Usage
-- Memory Usage
-
-## 🐳 Docker Hub
-
-Pre-built images are available on Docker Hub:
+Stop stack:
 
 ```bash
-# Pull backend image
-docker pull 2004369/resumebuilder-backend:latest
-
-# Pull frontend image
-docker pull 2004369/resumebuilder-frontend:latest
+docker-compose down
 ```
 
-## 🔄 CI/CD Pipeline
+## Monitoring
 
-GitHub Actions automatically builds and pushes Docker images on every push to `main`:
+- Backend exposes metrics at `GET /metrics`
+- Prometheus scrapes backend metrics every 10 seconds
+- Grafana ships with pre-provisioned dashboard configuration
 
-**Workflow:** `.github/workflows/docker-build-push.yml`
-
-**Required GitHub Secrets:**
-- `DOCKERHUB_USERNAME` - Your Docker Hub username
-- `DOCKERHUB_TOKEN` - Docker Hub Personal Access Token
-
-**Image Tags:**
-- `latest` - Latest build from main branch
-- `<commit-sha>` - Specific commit version (e.g., `abc123f`)
-
-## 🌐 Deployment on Microsoft Azure
-
-### 🎯 Primary Deployment: Azure Container Apps (Production)
-
-**This project is deployed on Microsoft Azure utilizing the following Azure services:**
-- **Azure Container Apps** - Serverless container hosting with auto-scaling
-- **Azure Container Registry (ACR)** - Private container image registry
-- **Azure Virtual Network** - Secure networking between services
-- **Azure Monitor** - Application insights and logging (integrated with Prometheus)
-
-**Architecture Overview:**
-```
-GitHub Actions → Build Images → Push to ACR → Deploy to Container Apps → Production URLs
-```
-
-### Why Azure Container Apps?
-
-**Benefits of Azure deployment:**
-- ✅ **Serverless** - No VM management, automatic scaling
-- ✅ **Cost-effective** - Pay only for what you use, auto-scale to zero
-- ✅ **Integrated monitoring** - Built-in Azure Monitor and Application Insights
-- ✅ **High availability** - 99.95% SLA, automatic failover
-- ✅ **Security** - Private ACR, managed identities, network isolation
-- ✅ **DevOps integration** - Seamless CI/CD with GitHub Actions
-
----
-
-### Deployment Steps
-
-#### Prerequisites
-- Azure account with active subscription (Free tier: $200 credit for 30 days)
-- Azure CLI installed and configured
-- Docker Hub account (for image distribution)
-
-#### Step 1: Create Resource Group
+Useful checks:
 
 ```bash
-az group create \
-  --name resumebuilder-rg \
-  --location eastus
+curl http://localhost:4000/metrics
+docker-compose ps
+docker-compose logs -f backend
 ```
 
-#### Step 2: Create Container Registry (ACR)
+## AWS Deployment (Terraform)
+
+The repository includes a deployment option designed for demo/showcase usage.
 
 ```bash
-az acr create \
-  --resource-group resumebuilder-rg \
-  --name resumebuilderacr \
-  --sku Basic \
-  --admin-enabled true
+cd infra/ec2-compose-alb
+cp terraform.tfvars.example terraform.tfvars
+# Fill in real values for key_name, mongo_uri, redis_url, jwt_secret, etc.
+
+terraform init
+terraform plan
+terraform apply
 ```
 
-#### Step 3: Get ACR Credentials
+Outputs include:
+
+- ALB DNS name
+- App URL
+- EC2 public IP
+
+Destroy infrastructure:
 
 ```bash
-az acr credential show --name resumebuilderacr
+terraform destroy
 ```
 
-#### Step 4: Login to ACR
+## What You Built (Backend + DevOps Highlight)
 
-```bash
-docker login resumebuilderacr.azurecr.io -u resumebuilderacr -p <password>
-```
+You implemented a strong production-style foundation:
 
-#### Step 5: Tag and Push Images
+- Designed a protected API platform (auth + resource ownership)
+- Added Redis-assisted read performance and cache invalidation discipline
+- Integrated image upload lifecycle handling with cleanup
+- Added Prometheus-compatible instrumentation and metrics endpoint
+- Containerized both tiers with runtime-configurable reverse proxy behavior
+- Automated build and image publishing using GitHub Actions
+- Codified AWS networking, ALB routing, and compute bootstrap with Terraform
 
-```bash
-# Tag images
-docker tag 2004369/resumebuilder-backend:latest resumebuilderacr.azurecr.io/resumebuilder-backend:latest
-docker tag 2004369/resumebuilder-frontend:latest resumebuilderacr.azurecr.io/resumebuilder-frontend:latest
+This is the exact type of implementation depth expected in backend and DevOps-focused full-stack projects.
 
-# Push to ACR
-docker push resumebuilderacr.azurecr.io/resumebuilder-backend:latest
-docker push resumebuilderacr.azurecr.io/resumebuilder-frontend:latest
-```
+## License
 
-#### Step 6: Create Container App Environment
+Licensed under the MIT License. See `LICENSE` for details.
 
-```bash
-az containerapp env create \
-  --name resumebuilder-env \
-  --resource-group resumebuilder-rg \
-  --location eastus
-```
+## Author
 
-#### Step 7: Deploy Backend Container App
+Santosh Reddy
 
-```bash
-az containerapp create \
-  --name resumebuilder-backend \
-  --resource-group resumebuilder-rg \
-  --environment resumebuilder-env \
-  --image resumebuilderacr.azurecr.io/resumebuilder-backend:latest \
-  --registry-server resumebuilderacr.azurecr.io \
-  --registry-username resumebuilderacr \
-  --registry-password <ACR_PASSWORD> \
-  --target-port 4000 \
-  --ingress external \
-  --env-vars \
-    MONGO_URI=<your-mongodb-uri> \
-    JWT_SECRET=<your-jwt-secret> \
-    NODE_ENV=production \
-    PORT=4000 \
-  --cpu 0.5 \
-  --memory 1Gi \
-  --min-replicas 1 \
-  --max-replicas 3
-```
-
-#### Step 8: Deploy Frontend Container App
-
-```bash
-az containerapp create \
-  --name resumebuilder-frontend \
-  --resource-group resumebuilder-rg \
-  --environment resumebuilder-env \
-  --image resumebuilderacr.azurecr.io/resumebuilder-frontend:latest \
-  --registry-server resumebuilderacr.azurecr.io \
-  --registry-username resumebuilderacr \
-  --registry-password <ACR_PASSWORD> \
-  --target-port 80 \
-  --ingress external \
-  --cpu 0.25 \
-  --memory 0.5Gi \
-  --min-replicas 1 \
-  --max-replicas 2
-```
-
-#### Step 9: Get Application URLs
-
-```bash
-# Backend URL
-az containerapp show \
-  --name resumebuilder-backend \
-  --resource-group resumebuilder-rg \
-  --query properties.configuration.ingress.fqdn
-
-# Frontend URL
-az containerapp show \
-  --name resumebuilder-frontend \
-  --resource-group resumebuilder-rg \
-  --query properties.configuration.ingress.fqdn
-```
-
-#### Step 10: Update Frontend API Configuration
-
-Update the backend URL in your frontend environment or rebuild with:
-
-```bash
-VITE_API_URL=https://<backend-fqdn> npm run build
-```
-
----
-
-### 📊 Azure Deployment Summary
-
-**Azure Resources Created:**
-1. **Resource Group**: `resumebuilder-rg` (East US)
-2. **Container Registry**: `resumebuilderacr` (Basic SKU)
-3. **Container Environment**: `resumebuilder-env` (Serverless infrastructure)
-4. **Backend Container App**: 
-   - Image: `resumebuilderacr.azurecr.io/resumebuilder-backend:latest`
-   - Resources: 0.5 CPU, 1Gi Memory
-   - Scaling: 1-3 replicas based on traffic
-   - External ingress on port 4000
-5. **Frontend Container App**:
-   - Image: `resumebuilderacr.azurecr.io/resumebuilder-frontend:latest`
-   - Resources: 0.25 CPU, 0.5Gi Memory
-   - Scaling: 1-2 replicas
-   - External ingress on port 80
-
-**Cost Optimization:**
-- Uses Azure Free Tier resources where possible
-- Auto-scales to zero during low traffic
-- Optimized Docker images (74% smaller) reduce storage and bandwidth costs
-
-**Monitoring & Observability:**
-- Prometheus metrics exposed via `/metrics` endpoint
-- Grafana dashboards for real-time monitoring
-- Azure Monitor integration for logs and alerts
-- Health checks configured for both container apps
-
----
-
-## 📊 Results & Performance
-
-### Performance Metrics
-
-#### **Docker Image Optimization**
-| Component | Before Optimization | After Multi-Stage Build | Reduction |
-|-----------|-------------------|------------------------|-----------|
-| Backend   | 1.2 GB            | 313 MB                 | 74%       |
-| Frontend  | 900 MB            | 64 MB                  | 93%       |
-
-**Impact**: Faster deployments, reduced storage costs, and improved CI/CD pipeline speed.
-
-#### **API Response Time**
-| Endpoint | Average Response Time | p95 Latency | p99 Latency |
-|----------|----------------------|-------------|-------------|
-| /api/user/login | 145ms | 180ms | 220ms |
-| /api/resume (GET) | 98ms | 120ms | 150ms |
-| /api/resume (POST) | 215ms | 280ms | 350ms |
-| /metrics | 12ms | 18ms | 25ms |
-
-**Result**: All API endpoints respond under 400ms, meeting performance SLA.
-
-#### **Azure Auto-Scaling Performance**
-- **Backend**: Scales from 1 to 3 replicas under high load (>80% CPU)
-- **Frontend**: Scales from 1 to 2 replicas under traffic spikes
-- **Scale-up time**: ~15 seconds
-- **Scale-down time**: ~60 seconds (graceful shutdown)
-
-#### **Code Metrics**
-- **Total Backend Code**: 831 lines (excluding node_modules)
-- **API Endpoints**: 8 REST endpoints
-- **Prometheus Metrics**: 15+ custom metrics
-- **Database Collections**: 2 (Users, Resumes)
-- **Docker Containers**: 4 (Backend, Frontend, Prometheus, Grafana)
-
-### Deployment Results
-
-#### **Azure Resources Provisioned**
-```bash
-✅ Resource Group: resumebuilder-rg (East US)
-✅ Container Registry: resumebuilderacr (Basic SKU)
-✅ Container Environment: resumebuilder-env
-✅ Backend Container App: 0.5 CPU, 1Gi Memory, 1-3 replicas
-✅ Frontend Container App: 0.25 CPU, 0.5Gi Memory, 1-2 replicas
-✅ Total Monthly Cost Estimate: $15-30 (with auto-scale to zero)
-```
-
-#### **Monitoring Dashboards**
-- ✅ Grafana dashboard with 8 panels tracking:
-  - HTTP request rate and latency
-  - Database query performance
-  - System resources (CPU, memory)
-  - Business metrics (resumes created, user signups)
-- ✅ Prometheus scraping 15+ metrics every 10 seconds
-- ✅ Real-time alerting for error rates >5%
-
-### Test Results
-
-#### **Functional Testing**
-| Feature | Test Cases | Pass Rate | Status |
-|---------|-----------|-----------|--------|
-| User Registration | 5 | 100% | ✅ Pass |
-| User Login | 6 | 100% | ✅ Pass |
-| Resume Creation | 8 | 100% | ✅ Pass |
-| Resume Update | 6 | 100% | ✅ Pass |
-| Image Upload | 4 | 100% | ✅ Pass |
-| Template Selection | 3 | 100% | ✅ Pass |
-
-#### **Security Testing**
-- ✅ JWT token validation working correctly
-- ✅ Password hashing with bcrypt (10 rounds)
-- ✅ CORS configured for allowed origins only
-- ✅ Input validation preventing SQL/NoSQL injection
-- ✅ File upload restrictions (max 5MB, images only)
-
-#### **Load Testing** (Apache Bench)
-```bash
-# 1000 requests, 100 concurrent users
-Requests per second: 187.23 [#/sec]
-Time per request: 533.41 [ms] (mean)
-Failed requests: 0
-```
-**Result**: System handles 187 RPS without errors.
-
-### User Acceptance
-
-#### **Features Delivered**
-- ✅ Multi-template resume creation
-- ✅ Real-time preview
-- ✅ Cloud-based storage
-- ✅ Secure authentication
-- ✅ Cross-device accessibility
-- ✅ PDF export capability
-- ✅ Theme customization
-- ✅ Production monitoring
-
----
-
-## ✅ Conclusion
-
-### Project Achievements
-
-This project successfully demonstrates the **end-to-end development and deployment of a production-grade, cloud-native web application** using modern technologies and industry best practices.
-
-#### **Key Accomplishments**
-
-1. **Full-Stack Development**
-   - Built a complete MERN stack application with 831 lines of backend code
-   - Implemented secure JWT authentication with bcrypt password hashing
-   - Designed and optimized MongoDB schemas for efficient data storage
-   - Created responsive React frontend with 3 professional resume templates
-
-2. **DevOps Excellence**
-   - Achieved 74% Docker image size reduction through multi-stage builds
-   - Implemented automated CI/CD pipeline with GitHub Actions
-   - Deployed on Microsoft Azure Container Apps with auto-scaling
-   - Integrated comprehensive monitoring with Prometheus and Grafana
-
-3. **Cloud-Native Architecture**
-   - Leveraged Azure Container Apps for serverless hosting
-   - Utilized Azure Container Registry for private image storage
-   - Configured auto-scaling based on CPU and traffic metrics
-   - Implemented health checks and zero-downtime deployments
-
-4. **Production-Grade Observability**
-   - Instrumented 15+ custom Prometheus metrics
-   - Created real-time Grafana dashboards for monitoring
-   - Implemented error tracking and performance monitoring
-   - Configured alerting for critical system events
-
-5. **Security & Best Practices**
-   - Environment-based configuration management
-   - Secure secret handling (no hardcoded credentials)
-   - CORS and input validation
-   - Regular security audits and updates
-
-### Learning Outcomes
-
-Through this project, the following skills were developed and demonstrated:
-
-- ✅ **Backend Development**: Node.js, Express, RESTful API design, MongoDB
-- ✅ **Frontend Development**: React, state management, responsive design
-- ✅ **Containerization**: Docker, multi-stage builds, image optimization
-- ✅ **Cloud Computing**: Azure Container Apps, ACR, serverless architecture
-- ✅ **DevOps**: CI/CD pipelines, GitHub Actions, automated deployments
-- ✅ **Monitoring**: Prometheus metrics, Grafana dashboards, observability
-- ✅ **Security**: JWT authentication, password hashing, secure coding practices
-- ✅ **Database Design**: MongoDB schema design, indexing, query optimization
-
-### Project Impact
-
-This application solves real-world problems by:
-- Enabling users to create professional resumes without design expertise
-- Providing cloud-based access across multiple devices
-- Ensuring data security and privacy
-- Offering scalable, production-ready infrastructure
-- Demonstrating enterprise-level development practices
-
-The project is **production-ready** and can be used by real users, with monitoring and auto-scaling ensuring reliability and performance.
-
----
-
-## 🚀 Future Scope
-
-### Planned Enhancements
-
-#### **Short-term Improvements (Next 3 months)**
-
-1. **Enhanced Testing**
-   - Add unit tests with Jest (target: 80% code coverage)
-   - Implement integration tests with Supertest
-   - Add end-to-end tests with Cypress
-   - Automated testing in CI/CD pipeline
-
-2. **Additional Features**
-   - LinkedIn integration for auto-filling resume data
-   - AI-powered resume content suggestions using GPT API
-   - Cover letter generator
-   - ATS (Applicant Tracking System) optimization score
-   - Resume version history and rollback
-
-3. **Performance Optimization**
-   - Implement Redis caching for frequently accessed data
-   - Add CDN for static assets (Azure CDN)
-   - Database query optimization with aggregation pipelines
-   - Lazy loading for resume templates
-
-#### **Medium-term Goals (3-6 months)**
-
-4. **Advanced Monitoring**
-   - Azure Application Insights integration
-   - Distributed tracing with OpenTelemetry
-   - User behavior analytics
-   - A/B testing framework for UI experiments
-
-5. **Security Enhancements**
-   - Multi-factor authentication (MFA)
-   - OAuth2 integration (Google, GitHub login)
-   - Azure Key Vault for secret management
-   - Automated security scanning in CI/CD
-
-6. **Template Marketplace**
-   - 10+ additional resume templates
-   - User-submitted template marketplace
-   - Template rating and review system
-   - Premium templates (monetization)
-
-#### **Long-term Vision (6-12 months)**
-
-7. **Enterprise Features**
-   - Multi-tenant architecture for organizations
-   - Role-based access control (RBAC)
-   - Team collaboration on resumes
-   - Bulk resume generation API for enterprises
-
-8. **AI/ML Integration**
-   - Resume content improvement suggestions using NLP
-   - Job description matching algorithm
-   - Skill gap analysis
-   - Salary prediction based on resume content
-
-9. **Mobile Application**
-   - React Native mobile app (iOS/Android)
-   - Push notifications for resume updates
-   - Offline mode with sync
-   - QR code resume sharing
-
-10. **Global Expansion**
-    - Multi-language support (i18n)
-    - Regional resume format standards
-    - Currency and date format localization
-    - GDPR compliance for European users
-
-### Scalability Roadmap
-
-- **Database**: Migrate to sharded MongoDB cluster for horizontal scaling
-- **Caching**: Implement Redis cluster for distributed caching
-- **CDN**: Integrate Azure Front Door for global content delivery
-- **Microservices**: Split into microservices (Auth, Resume, Export, Analytics)
-- **Event-Driven**: Implement message queues (Azure Service Bus) for async tasks
-
-### Technology Upgrades
-
-- Migrate to TypeScript for type safety
-- Implement GraphQL API alongside REST
-- Add WebSocket support for real-time collaboration
-- Explore serverless functions (Azure Functions) for compute-heavy tasks
-
----
-
-## 📚 References
-
-### Official Documentation
-
-1. **React**  
-   React Documentation: https://react.dev/  
-   React Hooks: https://react.dev/reference/react
-
-2. **Node.js & Express**  
-   Node.js Documentation: https://nodejs.org/docs/  
-   Express.js Guide: https://expressjs.com/en/guide/routing.html
-
-3. **MongoDB**  
-   MongoDB Manual: https://www.mongodb.com/docs/manual/  
-   Mongoose Documentation: https://mongoosejs.com/docs/
-
-4. **Docker**  
-   Docker Documentation: https://docs.docker.com/  
-   Docker Multi-stage Builds: https://docs.docker.com/build/building/multi-stage/  
-   Best Practices: https://docs.docker.com/develop/dev-best-practices/
-
-5. **Microsoft Azure**  
-   Azure Container Apps: https://learn.microsoft.com/en-us/azure/container-apps/  
-   Azure Container Registry: https://learn.microsoft.com/en-us/azure/container-registry/  
-   Azure Monitor: https://learn.microsoft.com/en-us/azure/azure-monitor/
-
-6. **Prometheus & Grafana**  
-   Prometheus Documentation: https://prometheus.io/docs/  
-   Grafana Documentation: https://grafana.com/docs/grafana/latest/  
-   prom-client (Node.js): https://github.com/siimon/prom-client
-
-7. **GitHub Actions**  
-   GitHub Actions Documentation: https://docs.github.com/en/actions  
-   Docker Build Push Action: https://github.com/marketplace/actions/build-and-push-docker-images
-
-### Technical Articles & Tutorials
-
-8. **JWT Authentication**  
-   "Introduction to JSON Web Tokens": https://jwt.io/introduction  
-   "Best Practices for JWT": https://auth0.com/blog/jwt-handbook/
-
-9. **Docker Optimization**  
-   "Building Efficient Docker Images": https://www.docker.com/blog/building-efficient-docker-images/  
-   "Multi-stage Builds": https://blog.logrocket.com/docker-multi-stage-builds/
-
-10. **Azure Deployment**  
-    "Deploy to Azure Container Apps": https://learn.microsoft.com/en-us/azure/container-apps/quickstart-portal  
-    "Azure Container Apps Best Practices": https://learn.microsoft.com/en-us/azure/container-apps/scale-app
-
-11. **Monitoring Best Practices**  
-    "Prometheus Monitoring": https://prometheus.io/docs/practices/naming/  
-    "Grafana Dashboard Design": https://grafana.com/blog/2021/03/09/grafana-dashboard-best-practices/
-
-### Research Papers
-
-12. **Cloud Computing**  
-    Armbrust, M., et al. (2010). "A View of Cloud Computing." *Communications of the ACM*, 53(4), 50-58.
-
-13. **Containerization**  
-    Bernstein, D. (2014). "Containers and Cloud: From LXC to Docker to Kubernetes." *IEEE Cloud Computing*, 1(3), 81-84.
-
-14. **Microservices Architecture**  
-    Newman, S. (2015). "Building Microservices: Designing Fine-Grained Systems." O'Reilly Media.
-
-### Books Referenced
-
-15. **Node.js Design Patterns** by Mario Casciaro & Luciano Mammino  
-    Publisher: Packt Publishing (2020)
-
-16. **Docker Deep Dive** by Nigel Poulton  
-    Publisher: Independently published (2020)
-
-17. **Designing Data-Intensive Applications** by Martin Kleppmann  
-    Publisher: O'Reilly Media (2017)
-
-### Online Resources
-
-18. **Stack Overflow** - Problem-solving and debugging  
-    https://stackoverflow.com/
-
-19. **GitHub Repositories** - Code examples and best practices  
-    https://github.com/
-
-20. **Docker Hub** - Container images and documentation  
-    https://hub.docker.com/
-
-21. **MongoDB University** - Free MongoDB courses  
-    https://learn.mongodb.com/
-
-22. **Microsoft Learn** - Azure learning paths  
-    https://learn.microsoft.com/en-us/training/azure/
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 👨‍💻 Author
-
-**Santosh Reddy**  
-- GitHub: [@santoshreddy-1362004](https://github.com/santoshreddy-1362004)  
-- Email: [Your Email]  
-- LinkedIn: [Your LinkedIn]
-
----
-
-## 🙏 Acknowledgments
-
-- **Microsoft Azure** for providing cloud infrastructure and comprehensive documentation
-- **Docker Community** for containerization tools and best practices
-- **Prometheus & Grafana** teams for open-source monitoring solutions
-- **MongoDB Atlas** for managed database services
-- **GitHub** for version control and CI/CD platform
-- **React & Node.js** communities for excellent frameworks and libraries
-- **GitHub Copilot** for AI-assisted development and productivity enhancement
-
----
-
-**⭐ If you found this project helpful, please give it a star!**
-
----
-
-**Project Status**: ✅ **Production-Ready** | **Deployed on Azure** | **Actively Maintained**
-
----
-
-*This project was developed as part of the Microsoft Elevate Internship program to demonstrate cloud-native application development, containerization, and Azure deployment expertise.*
+- GitHub: https://github.com/santoshreddy-1362004
