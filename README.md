@@ -2,11 +2,22 @@
 
 Production-grade resume builder built with a modern MERN architecture, containerized delivery, infrastructure automation, and observability-first operations.
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Backend](https://img.shields.io/badge/backend-Node.js%20%2B%20Express-339933)
-![Database](https://img.shields.io/badge/database-MongoDB-47A248)
-![DevOps](https://img.shields.io/badge/devops-Docker%20%7C%20Terraform%20%7C%20GitHub%20Actions-2496ED)
-![Monitoring](https://img.shields.io/badge/monitoring-Prometheus%20%2B%20Grafana-orange)
+![License](https://img.shields.io/badge/License-MIT-181717?style=for-the-badge&logo=opensourceinitiative&logoColor=white)
+![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=0A0A0A)
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![Express](https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![Terraform](https://img.shields.io/badge/Terraform-844FBA?style=for-the-badge&logo=terraform&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)
+![Prometheus](https://img.shields.io/badge/Prometheus-E6522C?style=for-the-badge&logo=prometheus&logoColor=white)
+![Grafana](https://img.shields.io/badge/Grafana-F46800?style=for-the-badge&logo=grafana&logoColor=white)
+![Nginx](https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=nginx&logoColor=white)
+
+<p align="left">
+  <img src="https://skillicons.dev/icons?i=react,vite,nodejs,express,mongodb,redis,docker,githubactions,terraform,prometheus,grafana,nginx,aws" alt="Core technology logos" />
+</p>
 
 ## Table of Contents
 
@@ -40,66 +51,14 @@ What this project demonstrates clearly:
 
 ## Architecture Diagram
 
-The following diagram represents the complete runtime and delivery architecture, including user traffic flow, cloud infrastructure, CI/CD pipeline, data services, and observability components.
+The architecture is shown below as a static SVG to ensure consistent rendering on GitHub, VS Code, and markdown preview tools.
 
-```mermaid
-flowchart LR
-  U[End User\nBrowser / Mobile]
-  D[Developer]
+![ResumeBuilder Complete Architecture](docs/architecture/resumebuilder-architecture.svg)
 
-  subgraph CICD[CI/CD Pipeline]
-    REPO[GitHub Repository\nmain branch]
-    GA[GitHub Actions\nBuild and Push Docker Images]
-    DH[(Docker Hub\nFrontend + Backend Images)]
-    REPO -->|push to main| GA
-    GA -->|docker buildx + push| DH
-  end
+Backend and DevOps emphasis in this architecture:
 
-  subgraph AWS[AWS Cloud]
-    ALB[Application Load Balancer\n:80 / :443]
-
-    subgraph VPC[VPC 10.20.0.0/16]
-      subgraph SN1[Public Subnet A]
-        EC2[EC2 Instance\nAmazon Linux 2023]
-
-        subgraph COMPOSE[Docker Compose on EC2]
-          FE[Frontend Container\nReact + Nginx]
-          BE[Backend Container\nNode.js + Express]
-          VOL[(Docker Volume\n/uploads)]
-        end
-      end
-
-      subgraph SN2[Public Subnet B]
-        AZ2[ALB Availability Zone]
-      end
-    end
-
-    ALB -->|forward target group| FE
-    FE -->|proxy /api/* and /uploads/*| BE
-    BE -->|read/write image files| VOL
-  end
-
-  MDB[(MongoDB Atlas\nUsers + Resumes)]
-  RDS[(Upstash Redis\nCache Layer)]
-
-  subgraph MON[Observability Stack\nDocker Compose / Codespaces]
-    PM[Prometheus\nScrape /metrics]
-    GF[Grafana\nDashboards]
-    PM -->|datasource| GF
-  end
-
-  U -->|HTTP/HTTPS| ALB
-  BE -->|Mongoose CRUD| MDB
-  BE -->|getOrSetCache / invalidate| RDS
-  BE -->|Expose /metrics| PM
-
-  FE -->|/api/auth + /api/resume| BE
-  BE -->|JWT issue + verify| FE
-
-  D -->|commit code| REPO
-  DH -->|docker compose pull| EC2
-  D -->|terraform apply| AWS
-```
+- Redis is a first-class component in the data path, used for cached reads and explicit invalidation.
+- CI/CD and infrastructure automation are shown together, from GitHub push to Docker image distribution and EC2 runtime bootstrap.
 
 ### Architecture Notes
 
@@ -188,10 +147,17 @@ Operational routes:
 ### Data and Caching Strategy
 
 - MongoDB stores users and resume documents
-- Upstash Redis stores cached read payloads
+- Upstash Redis stores cached read payloads and reduces repeated database reads
 - `getOrSetCache` is used for profile and resume reads
 - Cache keys are invalidated on create/update/delete write operations
 - Redis failures gracefully fall back to database fetches
+
+### Redis Caching Layer (Highlighted)
+
+- Redis is used in user profile and resume retrieval paths to improve API responsiveness.
+- Cache TTL is controlled at the key level (`300s` default, custom TTL where needed).
+- Write operations invalidate affected keys to avoid stale reads.
+- The backend includes a dedicated health endpoint (`/api/redis-health`) for connectivity verification.
 
 ### File Upload Pipeline
 
