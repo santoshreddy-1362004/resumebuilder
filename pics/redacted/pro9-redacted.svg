@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1366" height="768" viewBox="0 0 1366 768">
+  <defs>
+    <filter id="blur" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="7" />
+    </filter>
+    <clipPath id="c1"><rect x="1120" y="84" width="236" height="34" /></clipPath>
+  </defs>
+
+  <image href="../pro9.png" x="0" y="0" width="1366" height="768" />
+
+  <g clip-path="url(#c1)">
+    <image href="../pro9.png" x="0" y="0" width="1366" height="768" filter="url(#blur)" />
+  </g>
+
+  <rect x="16" y="728" width="260" height="28" rx="6" fill="#111827" opacity="0.75" />
+  <text x="26" y="747" fill="#ffffff" font-size="13" font-family="Arial, sans-serif">Sensitive data redacted</text>
+</svg>

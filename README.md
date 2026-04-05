@@ -177,19 +177,19 @@ All proof images are included below in filename order (`pro2` -> `pro9`) so the 
 
 ### Proof 1 - Terraform Inputs and AWS CLI Setup (`pro2.png`)
 
-![Terraform inputs and AWS CLI setup](pics/pro2.png)
+![Terraform inputs and AWS CLI setup (redacted)](pics/redacted/pro2-redacted.svg)
 
 ### Proof 2 - Terraform Apply Initialization (`pro3.png`)
 
-![Terraform apply initialization](pics/pro3.png)
+![Terraform apply initialization (redacted)](pics/redacted/pro3-redacted.svg)
 
 ### Proof 3 - Resource Creation Complete (`pro4.png`)
 
-![Terraform apply complete output](pics/pro4.png)
+![Terraform apply complete output (redacted)](pics/redacted/pro4-redacted.svg)
 
 ### Proof 4 - Terraform Outputs and SSH Command (`pro7.png`)
 
-![Terraform outputs and SSH command](pics/pro7.png)
+![Terraform outputs and SSH command (redacted)](pics/redacted/pro7-redacted.svg)
 
 ### Proof 5 - Application Reachability Through ALB (`pro8.png`)
 
@@ -197,7 +197,7 @@ All proof images are included below in filename order (`pro2` -> `pro9`) so the 
 
 ### Proof 6 - EC2 Instance Running Status (`pro9.png`)
 
-![EC2 instance running status in AWS console](pics/pro9.png)
+![EC2 instance running status in AWS console (redacted)](pics/redacted/pro9-redacted.svg)
 
 ### Security Note
 
